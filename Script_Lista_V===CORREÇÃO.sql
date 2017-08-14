@@ -428,4 +428,67 @@ create procedure venderPassagem (cliente int, funcionario int, trecho int, poltr
 $$ delimiter ;
 
 call venderPassagem (1, 2, 2, 5, '2017-08-11');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+delimiter $$
+CREATE FUNCTION QuantidadePoltronasLivres (onibus int) returns integer 
+begin
+declare quantidade int;
+select count(cod_pol) into quantidade 
+from poltrona where situação_pol = 'livre' and cod_oni = onibus;
+
+return quantidade;
+end;
+$$ delimiter ;
+
+
+select QuantidadePoltronasLivres(4);
+
+
+
+
+
+SELECT
+trecho.cod_tre as 'Código do Trecho',
+cidade.nome_cid as 'Cidade de Destino',
+trecho.data_part_tre as 'Data de Partida',
+trecho.horário_part_tre as 'Horario de Partida',
+onibus.modelo_oni as 'Onibus Previsto',
+QuantidadePoltronasLivres(onibus.cod_oni) as
+'Poltronas Disponíveis'
+FROM
+trecho INNER JOIN cidade ON trecho.cod_cid_destino =
+cidade.cod_cid
+INNER JOIN onibus ON trecho.cod_oni = onibus.cod_oni;
+
+
+
+
+
+
+
+
+
+
+
             
