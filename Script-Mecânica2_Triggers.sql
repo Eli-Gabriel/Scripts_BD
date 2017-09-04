@@ -504,7 +504,27 @@ e avise o usuario
 */
 
 
+DELIMITER |
+CREATE TRIGGER baixarEstoque AFTER INSERT ON itens_venda FOR EACH ROW
+BEGIN
 
+declare qtd integer;
+declare cprod integer;
+declare msg varchar(255);
+
+select cod_prod into cprod from itens_venda  where NEW.cod_itensvend = NEW.cod_itensvend;
+select quant_prod into qtd from produto where cod_prod = cprod;
+
+if (NEW.quant_itensvend >= qtd) then
+UPDATE produto SET quant_prod = quant_prod - NEW.quant_itensvend WHERE cod_prod = NEW.cod_prod;
+ELSE
+
+SET msg = 'Não foi possível dar baixa no estoque';
+
+SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+END IF;
+END;
+| DELIMITER ;
 
 
 
