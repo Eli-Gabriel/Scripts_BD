@@ -1,43 +1,18 @@
--- MySQL Workbench Forward Engineering
-
-SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
-SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
-
--- -----------------------------------------------------
--- Schema gamebook
--- -----------------------------------------------------
-
--- -----------------------------------------------------
--- Schema gamebook
--- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `gamebook` DEFAULT CHARACTER SET utf8 ;
-USE `gamebook` ;
-
--- -----------------------------------------------------
--- Table `gamebook`.`jogador`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `gamebook`.`jogador` (
-  `idjogador` INT NOT NULL AUTO_INCREMENT,
-  `nome` VARCHAR(45),
-  `energia_inicial` INT NULL,
-  `energia_atual` INT NULL,
-  `habilidade_inicial` INT NULL,
-  `habilidade_atual` INT NULL,
-  `sorte_inicial` INT NULL,
-  `sorte_atual` INT NULL,
-  `magia_inicial` INT NULL,
-  `magia_atual` INT NULL,
-  `pag_atual` INT NULL,
-  PRIMARY KEY (`idjogador`))
-ENGINE = InnoDB;
+drop database if exists gamebook;
+create database gamebook;
+use gamebook ;
 
 
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
-
+create table jogador(
+idjogador int not null primary key auto_increment,
+nome VARCHAR(45),
+energia_inicial INT NULL,
+habilidade_inicial INT NULL,
+sorte_inicial INT NULL,
+magia_inicial INT NULL,
+pag_atual INT NULL
+);
 
 create table itens (
 item_id int not null primary key auto_increment,
