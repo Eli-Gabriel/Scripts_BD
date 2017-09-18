@@ -509,7 +509,7 @@ BEGIN
 if (id != '') then
 	if (nome_cid !='') then
 		insert into cidade values (id, nome_cid, cod_est);
-	else select 'Favor informar o nome do Estado' as Msg;
+	else select 'Favor informar o nome da Cidade' as Msg;
     end if;
 else select 'Favor informar o id' as Msg;
 end if;
@@ -574,7 +574,7 @@ DELIMITER $$
 CREATE PROCEDURE DeleteSexo (id int)
 BEGIN
 if (id != '' && id > 0) then
-	delete from sexo where cod_end = id;
+	delete from sexo where cod_sex = id;
 else select 'Favor Inserir um número Válido' as Msg;
 end if;
 END;
@@ -612,7 +612,7 @@ DELIMITER $$
 CREATE PROCEDURE DeleteCliente (id int)
 BEGIN
 if (id != '' && id > 0) then
-	delete from cliente where cod_end = id;
+	delete from cliente where cod_cli = id;
 else select 'Favor Inserir um número Válido' as Msg;
 end if;
 END;
@@ -673,7 +673,7 @@ DELIMITER $$
 CREATE PROCEDURE DeleteDepartamento (id int)
 BEGIN
 if (id != '' && id > 0) then
-	delete from departamento where cod_car = id;
+	delete from departamento where cod_dep = id;
 else select 'Favor Inserir um número Válido' as Msg;
 end if;
 END;
@@ -712,10 +712,124 @@ DELIMITER $$
 CREATE PROCEDURE DeleteFuncionario (id int)
 BEGIN
 if (id != '' && id > 0) then
-	delete from funcionario where cod_end = id;
+	delete from funcionario where cod_func = id;
 else select 'Favor Inserir um número Válido' as Msg;
 end if;
 END;
+$$ DELIMITER ;
+
+
+
+
+
+
+DELIMITER $$
+CREATE PROCEDURE InsertFornecedor (id int, razaoSocial_forn varchar(200), nomefantasia_forn varchar(100), representante_forn varchar(100), cod_end int)
+BEGIN
+if (id != null) then
+	if (cod_end !='') then
+		insert into Fornecedor values (id, razaoSocial_forn, nomefantasia_forn, representante_forn, cod_end);
+	else select 'Favor informar o Código do endereço' as Msg;
+    end if;
+else select 'Favor informar o id' as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE DeleteFornecedor (id int)
+BEGIN
+if (id != '' && id > 0) then
+	delete from fornecedor where cod_forn = id;
+else select 'Favor Inserir um número Válido' as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
+
+
+
+DELIMITER $$
+CREATE PROCEDURE InsertProduto (id int, desccricao_prod varchar(50), marca_prod varchar(50), quant_prod int, valor_prod double, tamanho_prod varchar(50), tipo_prod varchar(50))
+BEGIN
+if (id != '') then
+	insert into Produto values (id, desccricao_prod, marca_prod, quant_prod, valor_prod, tamanho_prod, tipo_prod);
+else select 'Favor informar o id' as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE DeleteProduto (id varchar(1000))
+BEGIN
+if (select codigo rlike '([0-9])' = 1) then
+	delete from Produto where cod_prod = id;
+    select 'Codigo deletado com sucesso!' as Msg;
+else
+	select 'Insira um código valido!' as Msg;
+end if;
+end;
+$$ DELIMITER ;
+
+
+
+
+
+DELIMITER $$
+CREATE PROCEDURE InsertServico (cod_serv int, descricao_serv varchar(300), tipo_serv varchar(100), valor_serv float, tempo_serv time)
+BEGIN
+if (cod_serv != '') then
+	if (valor_serv >= 0) then
+		insert into Estado values (cod_serv, descricao_serv, tipo_serv, valor_serv, tempo_serv);
+	else select 'Favor informar um Valor válido' as Msg;
+    end if;
+else select 'Favor informar o id' as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE DeleteServico (id varchar(1000))
+BEGIN
+if (select codigo rlike '([0-9])' = 1) then
+	delete from Servico where cod_serv = id;
+    select 'Codigo deletado com sucesso!' as Msg;
+else
+	select 'Insira um código valido!' as Msg;
+end if;
+end;
+$$ DELIMITER ;
+
+
+
+
+
+DELIMITER $$
+CREATE PROCEDURE InsertCompra_Produto (cod_comp int, data_comp date, valortoal_comp double, formapag_comp varchar(100), cod_func int, cod_forn int)
+BEGIN
+if (cod_comp != '') then
+	if (cod_func !='') then
+		if (cod_forn !='') then
+        insert into Compra_Produto values (cod_comp, cod_func, cod_forn);
+	else select 'Favor informar o Código do Fornecedor' as Msg;
+        end if;
+	else select 'Favor informar o Código do Funcionario' as Msg;
+    end if;
+else select 'Favor informar o id' as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE DeleteCompra_Produto (id varchar(1000))
+BEGIN
+if (select codigo rlike '([0-9])' = 1) then
+	delete from compra_produto where cod_comp = id;
+    select 'Codigo deletado com sucesso!' as Msg;
+else
+	select 'Insira um código valido!' as Msg;
+end if;
+end;
 $$ DELIMITER ;
 
 
@@ -732,16 +846,34 @@ $$ DELIMITER ;
 
 
 
+/*
 
+DELIMITER $$
+CREATE PROCEDURE InsertXXX ()
+BEGIN
+if (id != '') then
+	if (nome_est !='') then
+		insert into Estado values (id, nome_est, sigla);
+	else select 'Favor informar o nome do Estado' as Msg;
+    end if;
+else select 'Favor informar o id' as Msg;
+end if;
+END;
+$$ DELIMITER ;
 
+DELIMITER $$
+CREATE PROCEDURE DeleteXXX (id varchar(1000))
+BEGIN
+if (select codigo rlike '([0-9])' = 1) then
+	delete from XXX where cod_XXX = id;
+    select 'Codigo deletado com sucesso!' as Msg;
+else
+	select 'Insira um código valido!' as Msg;
+end if;
+end;
+$$ DELIMITER ;
 
-
-
-
-
-
-
-
+*/
 
 
 
@@ -779,6 +911,11 @@ else select 'Favor informar o Código do caixa' as Msg;
 end if;
 END;
 $$ DELIMITER ;
+
+/*
+colocar !='0' em todas as chaves estrangeiras
+substituir os deletes pelos deletes com Rlike
+*/
 #Questão2
 #Questão3
 #Questão4
