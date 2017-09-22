@@ -445,23 +445,21 @@ insert into Pagamentos values (null, curdate(), 0, 'Débito Conta', 6, 3, 2, nul
 
 #Questão1
 /*
+drop procedure if exists InsertXXX;
 CREATE PROCEDURE InsertXXX ()
 BEGIN
-if (id != '') then
-	if (nome_est !='') then
-		insert into Estado values (id, nome_est, sigla);
-	else select 'Favor informar o nome do Estado' as Msg;
-    end if;
-else select 'Favor informar o id' as Msg;
+if (nome_est !='') then
+	insert into Estado values (id, nome_est, sigla);
+else select 'Favor informar o nome do Estado' as Msg;
 end if;
 END;
 $$ DELIMITER ;
 
+call InsertXXX()
 
-
-
+drop procedure if exists DeleteXXX;
 DELIMITER $$
-CREATE PROCEDURE DeleteXXX (id int)
+CREATE PROCEDURE DeleteXXX (id varchar(1000))
 BEGIN
 if (id != '' && id > 0) then
 	delete from XXX where cod_XXX = id;
@@ -470,129 +468,147 @@ end if;
 END;
 $$ DELIMITER ;
 
+call DeleteXXX();
 */
 
-
-
-
-
+drop procedure if exists InsertEstado;
 DELIMITER $$
-CREATE PROCEDURE InsertEstado (id int, nome_est varchar(200), sigla varchar(2))
+CREATE PROCEDURE InsertEstado (nome_est varchar(200), sigla varchar(2))
 BEGIN
-if (id != '') then
-	if (nome_est !='') then
-		insert into estado values (id, nome_est, sigla);
-	else select 'Favor informar o nome do Estado' as Msg;
-    end if;
-else select 'Favor informar o id' as Msg;
+if (nome_est != '') then
+	insert into estado values (null, nome_est, sigla);
+else select 'Favor informar o nome do Estado' as Msg;
 end if;
 END;
 $$ DELIMITER ;
 
+call InsertEstado('Rondônia', 'RO');
+
+drop procedure if exists DeleteEstado;
 DELIMITER $$
-CREATE PROCEDURE DeleteEstado (id int)
+CREATE PROCEDURE DeleteEstado (id varchar(1000))
 BEGIN
-if (id != '' && id > 0) then
-	delete from estado where cod_est = id;
-else select 'Favor Inserir um número Válido' as Msg;
+if (select id rlike '([0-9])' = 1) then
+	delete from Estado where cod_est = id;
+    select 'Codigo deletado com sucesso!' as Msg;
+else
+	select 'Insira um código valido!' as Msg;
 end if;
 END;
 $$ DELIMITER ;
 
+call DeleteEstado(28);
 
 
 
 
+
+drop procedure if exists InsertCidade;
 DELIMITER $$
-CREATE PROCEDURE InsertCidade (id int, nome_cid varchar(200), cod_est int)
+CREATE PROCEDURE InsertCidade (nome_cid varchar(200), cod_est int)
 BEGIN
-if (id != '') then
-	if (nome_cid !='') then
-		insert into cidade values (id, nome_cid, cod_est);
-	else select 'Favor informar o nome da Cidade' as Msg;
-    end if;
-else select 'Favor informar o id' as Msg;
+if (nome_cid !='') then
+	insert into cidade values (null, nome_cid, cod_est);
+else select 'Favor informar o nome da Cidade' as Msg;
 end if;
 END;
 $$ DELIMITER ;
 
+call InsertCidade('Presidente Médici', 22);
+
+drop procedure if exists DeleteCidade;
 DELIMITER $$
-CREATE PROCEDURE DeleteCidade (id int)
+CREATE PROCEDURE DeleteCidade (id varchar(1000))
 BEGIN
-if (id != '' && id > 0) then
-	delete from estado where cod_est = id;
-else select 'Favor Inserir um número Válido' as Msg;
+if (select id rlike '([0-9])' = 1) then
+	delete from Cidade where cod_cid = id;
+    select 'Codigo deletado com sucesso!' as Msg;
+else
+	select 'Insira um código valido!' as Msg;
 end if;
 END;
 $$ DELIMITER ;
 
+call Deletecidade(13);
 
 
 
 
+
+drop procedure if exists InsertEndereco;
 DELIMITER $$
-CREATE PROCEDURE InsertEndereco (id int, rua_end varchar(200), numero_end int, bairro_end varchar(100), cod_cid int)
+CREATE PROCEDURE InsertEndereco (rua_end varchar(200), numero_end int, bairro_end varchar(100), cod_cid int)
 BEGIN
-if (id != '') then
-	if (cod_cid !='') then
-		insert into endereco values (id, rua_end, numero_end, bairro_end, cod_cid);
-	else select 'Favor informar o nome do Estado' as Msg;
-    end if;
-else select 'Favor informar o id' as Msg;
+if (cod_cid !='') then
+	insert into endereco values (null, rua_end, numero_end, bairro_end, cod_cid);
+else select 'Favor informar o nome da Cidade' as Msg;
 end if;
 END;
 $$ DELIMITER ;
 
+call InsertEndereco('Silva', 569, 'Centro', 1);
+
+drop procedure if exists DeleteEndereco;
 DELIMITER $$
-CREATE PROCEDURE DeleteEndereco (id int)
+CREATE PROCEDURE DeleteEndereco (id varchar(1000))
 BEGIN
-if (id != '' && id > 0) then
-	delete from endereco where cod_end = id;
-else select 'Favor Inserir um número Válido' as Msg;
+if (select id rlike '([0-9])' = 1) then
+	delete from Endereco where cod_end = id;
+    select 'Endereço deletado com sucesso!' as Msg;
+else
+	select 'Insira um código valido!' as Msg;
 end if;
 END;
 $$ DELIMITER ;
 
+call DeleteEndereco(16);
 
 
 
 
+
+drop procedure if exists InsertSexo;
 DELIMITER $$
-CREATE PROCEDURE InsertSexo (id int, nome_sex varchar(100))
+CREATE PROCEDURE InsertSexo (nome_sex varchar(100))
 BEGIN
-if (id != '') then
-	if (nome_sex !='') then
-		insert into sexo values (id, nome_sex);
-	else select 'Favor informar o nome do Estado' as Msg;
-    end if;
-else select 'Favor informar o id' as Msg;
+if (nome_sex !='') then
+	insert into sexo values (null, nome_sex);
+else select 'Favor informar o nome do Sexo' as Msg;
 end if;
 END;
 $$ DELIMITER ;
 
+call InsertSexo('Indefinido');
+
+drop procedure if exists DeleteSexo;
 DELIMITER $$
-CREATE PROCEDURE DeleteSexo (id int)
+CREATE PROCEDURE DeleteSexo (id varchar(1000))
 BEGIN
-if (id != '' && id > 0) then
-	delete from sexo where cod_sex = id;
-else select 'Favor Inserir um número Válido' as Msg;
+if (select id rlike '([0-9])' = 1) then
+	delete from Sexo where cod_sex = id;
+    select 'Sexo deletado com sucesso!' as Msg;
+else
+	select 'Insira um código valido!' as Msg;
 end if;
 END;
 $$ DELIMITER ;
 
+call DeleteSexo(3);
 
 
 
+
+
+drop procedure if exists InsertCliente;
 DELIMITER $$
-CREATE PROCEDURE InsertCliente (id int, nome_cli varchar(200), estadocivil_cli varchar(50), cpf_cli varchar(20), rg_cli varchar(30), datanasc_cli date, rendafamiliar_cli float, telefone_cli varchar(50), celular_cli varchar(50), cod_sex int, cod_end int)
+CREATE PROCEDURE InsertCliente (nome_cli varchar(200), estadocivil_cli varchar(50), cpf_cli varchar(20), rg_cli varchar(30), datanasc_cli date, rendafamiliar_cli float, telefone_cli varchar(50), celular_cli varchar(50), cod_sex int, cod_end int)
 BEGIN
-if (id != '') then
 	if (nome_cli !='') then
 		if (cpf_cli !='') then
 			if (celular_cli !='') then
 				if (cod_sex !='') then
 					if (cod_end !='') then
-						insert into cliente values (id, nome_cli, estadocivil_cli, cpf_cli, rg_cli, datanasc_cli, rendafamiliar_cli, telefone_cli, celular_cli, cod_sex, cod_end);
+						insert into cliente values (null, nome_cli, estadocivil_cli, cpf_cli, rg_cli, datanasc_cli, rendafamiliar_cli, telefone_cli, celular_cli, cod_sex, cod_end);
 					else select 'Favor informar o Endereço' as Msg;
 					end if;
                 else select 'Favor informar o Sexo' as Msg;
@@ -603,33 +619,40 @@ if (id != '') then
         end if;
 	else select 'Favor informar o Nome' as Msg;
     end if;
-else select 'Favor informar o id' as Msg;
+END;
+$$ DELIMITER ;
+
+call Insertcliente('João', 'Solteiro', '5664186', '684864', '1985-05-23', 5671, '684165', '2341853', 1, 3);
+
+drop procedure if exists DeleteCliente;
+DELIMITER $$
+CREATE PROCEDURE DeleteCliente (id varchar(1000))
+BEGIN
+if (select id rlike '([0-9])' = 1) then
+	delete from Cliente where cod_cli = id;
+    select 'Cliente deletado com sucesso!' as Msg;
+else
+	select 'Insira um código valido!' as Msg;
 end if;
 END;
 $$ DELIMITER ;
 
+call DeleteCliente(16);
+
+
+
+
+
+drop procedure if exists InsertCarro;
 DELIMITER $$
-CREATE PROCEDURE DeleteCliente (id int)
+CREATE PROCEDURE InsertCarro (modelo_car varchar(100), cor_car varchar(50), portas_car varchar(50), placa_car varchar(50), marca_car varchar(50), cod_cli int)
 BEGIN
-if (id != '' && id > 0) then
-	delete from cliente where cod_cli = id;
-else select 'Favor Inserir um número Válido' as Msg;
-end if;
-END;
-$$ DELIMITER ;
-
-
-
-DELIMITER $$
-CREATE PROCEDURE InsertCarro (id int, modelo_car varchar(100), cor_car varchar(50), portas_car varchar(50), placa_car varchar(50), marca_car varchar(50), cod_cli int)
-BEGIN
-if (id !='') then
 	if (modelo_car !='') then
 		if (cor_car !='') then
 			if (placa_car !='') then
-				if (marcar_car !='') then
+				if (marca_car !='') then
 					if (cod_cli !='') then
-						insert into carro values (id, modelo_car, cor_car, portas_car, placa_car, marca_car, cod_cli);
+						insert into carro values (null, modelo_car, cor_car, portas_car, placa_car, marca_car, cod_cli);
 					else select 'Favor informar o Código do cliente' as Msg;
 					end if;
 				else select 'Favor informar a Marca' as Msg;
@@ -640,165 +663,217 @@ if (id !='') then
 		end if;
     else select 'Favor informar o Modelo' as Msg;
 	end if;
-else select 'Favor informar o id' as Msg;
+END;
+$$ DELIMITER ;
+
+call InsertCarro('fgb', 'azul', '5', '5643', 'fngl', 3);
+select * from carro;
+
+drop procedure if exists DeleteCarro;
+DELIMITER $$
+CREATE PROCEDURE DeleteCarro (id varchar(1000))
+BEGIN
+if (select id rlike '([0-9])' = 1) then
+	delete from Carro where cod_car = id;
+    select 'Carro deletado com sucesso!' as Msg;
+else
+	select 'Insira um código valido!' as Msg;
 end if;
 END;
 $$ DELIMITER ;
 
+call DeleteCarro(16);
+select * from carro;
+
+
+
+
+
+drop procedure if exists InsertDepartamento;
 DELIMITER $$
-CREATE PROCEDURE DeleteCarro (id int)
+CREATE PROCEDURE InsertDepartamento (nome_dep varchar(100), desc_dep varchar(300))
 BEGIN
-if (id != '' && id > 0) then
-	delete from carro where cod_car = id;
-else select 'Favor Inserir um número Válido' as Msg;
+if (nome_dep !='') then
+	insert into Departamento values (null, nome_dep, desc_dep);
+else select 'Favor informar o Nome' as Msg;
 end if;
 END;
 $$ DELIMITER ;
 
-
-
-
+call InsertDepartamento('erghedth', 'srgdth');
+select * from Departamento;
 
 DELIMITER $$
-CREATE PROCEDURE InsertDepartamento (id int, nome_dep varchar(100), desc_dep varchar(300))
+CREATE PROCEDURE DeleteDepartamento (id varchar(1000))
 BEGIN
-if (id !='') then
-	insert into carro values (id, nome_dep, desc_dep);
-else select 'Favor informar o id' as Msg;
+if (select id rlike '([0-9])' = 1) then
+	delete from Departamento where cod_dep = id;
+    select 'Departamento deletado com sucesso!' as Msg;
+else
+	select 'Insira um código valido!' as Msg;
 end if;
 END;
 $$ DELIMITER ;
 
+call DeleteDepartamento(6);
+select * from departamento;
+
+
+
+
+
+drop procedure if exists InsertFuncionario;
 DELIMITER $$
-CREATE PROCEDURE DeleteDepartamento (id int)
+CREATE PROCEDURE InsertFuncionario (nome_func varchar(200), cpf_func varchar(20), rg_func varchar(30), datanasc_func date, salario_func double, telefone_func varchar(50), celular_func varchar(50), funcao_func varchar(50), cod_sex int, cod_dep int, cod_end int)
 BEGIN
-if (id != '' && id > 0) then
-	delete from departamento where cod_dep = id;
-else select 'Favor Inserir um número Válido' as Msg;
-end if;
-END;
-$$ DELIMITER ;
-
-
-
-
-
-DELIMITER $$
-CREATE PROCEDURE InsertFuncionario (id int, nome_func varchar(200), cpf_func varchar(20), rg_func varchar(30), datanasc_func date, salario_func double, telefone_func varchar(50), celular_func varchar(50), funcao_func varchar(50), cod_sex int, cod_dep int)
-BEGIN
-if (id != '') then
-	if (nome_cli !='') then
-		if (cpf_cli !='') then
-			if (celular_cli !='') then
-				if (cod_sex !='') then
-					if (cod_end !='') then
-						insert into cliente values (id, nome_cli, estadocivil_cli, cpf_cli, rg_cli, datanasc_cli, rendafamiliar_cli, telefone_cli, celular_cli, cod_sex, cod_end);
-					else select 'Favor informar o Endereço' as Msg;
+	if (nome_func !='') then
+		if (cpf_func !='') then
+			if (salario_func !='') then
+				if (celular_func !='') then
+					if (funcao_func !='') then
+						if (cod_sex != '') then
+							if (cod_dep != '') then
+								if (cod_end != '') then
+									insert into Funcionario values (null, nome_func, cpf_func, rg_func, datanasc_func, salario_func, telefone_func, celular_func, funcao_func, cod_sex, cod_dep, cod_end);
+                                else select 'Favor informar o Endereço' as Msg;
+                                end if;
+                            else select 'Favor informar o Departamento' as Msg;
+                            end if;
+                        else select 'Favor informar o Sexo' as Msg;
+                        end if;
+					else select 'Favor informar o Função' as Msg;
 					end if;
-                else select 'Favor informar o Sexo' as Msg;
+                else select 'Favor informar a Celular' as Msg;
                 end if;
-			else select 'Favor informar o Celular' as Msg;
+			else select 'Favor informar o Salário' as Msg;
             end if;
         else select 'Favor informar o CPF' as Msg;
         end if;
 	else select 'Favor informar o Nome' as Msg;
     end if;
+END;
+$$ DELIMITER ;
+
+call InsertFuncionario('tiao', 'lv5546', '', null, 56841, '', '63534', 'atendente', 1, 3, 2);
+select * from funcionario;
+
+drop procedure if exists DelteFuncionario;
+DELIMITER $$
+CREATE PROCEDURE DeleteFuncionario (id varchar(1000))
+BEGIN
+if (select id rlike '([0-9])' = 1) then
+	delete from Funcionario where cod_func = id;
+    select 'Funcionario deletado com sucesso!' as Msg;
+else
+	select 'Insira um código valido!' as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
+call DeleteFuncionario(8);
+select * from funcionario;
+
+
+
+
+
+drop procedure if exists InsertFornecedor;
+DELIMITER $$
+CREATE PROCEDURE InsertFornecedor (razaoSocial_forn varchar(200), nomefantasia_forn varchar(100), representante_forn varchar(100), cod_end int)
+BEGIN
+if (cod_end !='') then
+	insert into Fornecedor values (null, razaoSocial_forn, nomefantasia_forn, representante_forn, cod_end);
+else select 'Favor informar o Código do endereço' as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
+call InsertFornecedor('', '', '', 3);
+select * from fornecedor;
+
+drop procedure if exists DeleteFornecedor;
+DELIMITER $$
+CREATE PROCEDURE DeleteFornecedor (id varchar(1000))
+BEGIN
+if (select id rlike '([0-9])' = 1) then
+	delete from Fornecedor where cod_forn = id;
+    select 'Fornecedor deletado com sucesso!' as Msg;
+else
+	select 'Insira um código valido!' as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
+call DeleteFornecedor(8);
+select * from fornecedor;
+
+
+
+
+
+drop procedure if exists InsertProduto;
+DELIMITER $$
+CREATE PROCEDURE InsertProduto (desccricao_prod varchar(50), marca_prod varchar(50), quant_prod int, valor_prod double, tamanho_prod varchar(50), tipo_prod varchar(50))
+BEGIN
+if (desccricao_prod != '') then
+	insert into Produto values (null, desccricao_prod, marca_prod, quant_prod, valor_prod, tamanho_prod, tipo_prod);
 else select 'Favor informar o id' as Msg;
 end if;
 END;
 $$ DELIMITER ;
 
-DELIMITER $$
-CREATE PROCEDURE DeleteFuncionario (id int)
-BEGIN
-if (id != '' && id > 0) then
-	delete from funcionario where cod_func = id;
-else select 'Favor Inserir um número Válido' as Msg;
-end if;
-END;
-$$ DELIMITER ;
+call InsertProduto('fgmnf', '', 65, 564, '', '');
+select * from produto;
 
-
-
-
-
-
-DELIMITER $$
-CREATE PROCEDURE InsertFornecedor (id int, razaoSocial_forn varchar(200), nomefantasia_forn varchar(100), representante_forn varchar(100), cod_end int)
-BEGIN
-if (id != null) then
-	if (cod_end !='') then
-		insert into Fornecedor values (id, razaoSocial_forn, nomefantasia_forn, representante_forn, cod_end);
-	else select 'Favor informar o Código do endereço' as Msg;
-    end if;
-else select 'Favor informar o id' as Msg;
-end if;
-END;
-$$ DELIMITER ;
-
-DELIMITER $$
-CREATE PROCEDURE DeleteFornecedor (id int)
-BEGIN
-if (id != '' && id > 0) then
-	delete from fornecedor where cod_forn = id;
-else select 'Favor Inserir um número Válido' as Msg;
-end if;
-END;
-$$ DELIMITER ;
-
-
-
-
-DELIMITER $$
-CREATE PROCEDURE InsertProduto (id int, desccricao_prod varchar(50), marca_prod varchar(50), quant_prod int, valor_prod double, tamanho_prod varchar(50), tipo_prod varchar(50))
-BEGIN
-if (id != '') then
-	insert into Produto values (id, desccricao_prod, marca_prod, quant_prod, valor_prod, tamanho_prod, tipo_prod);
-else select 'Favor informar o id' as Msg;
-end if;
-END;
-$$ DELIMITER ;
-
+drop procedure if exists Deleteproduto;
 DELIMITER $$
 CREATE PROCEDURE DeleteProduto (id varchar(1000))
 BEGIN
-if (select codigo rlike '([0-9])' = 1) then
+if (select id rlike '([0-9])' = 1) then
 	delete from Produto where cod_prod = id;
-    select 'Codigo deletado com sucesso!' as Msg;
+    select 'Produto deletado com sucesso!' as Msg;
 else
 	select 'Insira um código valido!' as Msg;
 end if;
 end;
 $$ DELIMITER ;
 
+call DeleteProduto(21);
+select * from produto;
 
 
 
 
+
+drop procedure if exists InsertServico;
 DELIMITER $$
-CREATE PROCEDURE InsertServico (cod_serv int, descricao_serv varchar(300), tipo_serv varchar(100), valor_serv float, tempo_serv time)
+CREATE PROCEDURE InsertServico (descricao_serv varchar(300), tipo_serv varchar(100), valor_serv float, tempo_serv time)
 BEGIN
-if (cod_serv != '') then
-	if (valor_serv >= 0) then
-		insert into Estado values (cod_serv, descricao_serv, tipo_serv, valor_serv, tempo_serv);
+	if (valor_serv >= 0 || valor_serv !='') then
+		insert into Servico values (null, descricao_serv, tipo_serv, valor_serv, tempo_serv);
 	else select 'Favor informar um Valor válido' as Msg;
     end if;
-else select 'Favor informar o id' as Msg;
-end if;
 END;
 $$ DELIMITER ;
 
+call InsertServico('', '', 654, '01:30');
+select * from Servico;
+
+drop procedure if exists DeleteServico;
 DELIMITER $$
 CREATE PROCEDURE DeleteServico (id varchar(1000))
 BEGIN
-if (select codigo rlike '([0-9])' = 1) then
+if (select id rlike '([0-9])' = 1) then
 	delete from Servico where cod_serv = id;
-    select 'Codigo deletado com sucesso!' as Msg;
+    select 'Serviço deletado com sucesso!' as Msg;
 else
 	select 'Insira um código valido!' as Msg;
 end if;
 end;
 $$ DELIMITER ;
+
+call DeleteServico(11);
+select * from Servico;
 
 
 
