@@ -1,4 +1,5 @@
 #BD Mecanica 3.0
+
 drop database if exists bd_mecanica;
 create database bd_mecanica;
 use bd_mecanica;
@@ -435,7 +436,6 @@ insert into Pagamentos values (null, curdate(), 0, 'Dinheiro', 6, 1, null, 3);
 insert into Pagamentos values (null, curdate(), 0, 'Dinheiro', 6, 2, null, 4);
 insert into Pagamentos values (null, curdate(), 0, 'Débito Conta', 6, 3, 1, null);
 insert into Pagamentos values (null, curdate(), 0, 'Débito Conta', 6, 3, 2, null);
-
 
 
 
@@ -1221,52 +1221,57 @@ substituir os deletes pelos deletes com Rlike
 */
 
 #Questão2
-drop trigger if exists Triguer1;
+drop trigger if exists Questao2;
 DELIMITER $$ 
-CREATE TRIGGER Triguer1 AFTER INSERT
+CREATE TRIGGER Questao2 AFTER INSERT
 ON Itens_Compra FOR EACH ROW
 BEGIN
 
 update compra_produto set valortotal_comp = valortotal_comp + NEW.valor_itenscomp
-where cod_comp = NEW.cod_prod;
+where compra_produto.cod_comp = NEW.cod_comp;
 
 update produto set quant_prod = quant_prod + NEW.quant_itenscomp
-where cod_prod = NEW.cod_itenscomp;
+where produto.cod_prod = NEW.cod_prod;
 
 update produto set valor_prod = valor_prod + (NEW.valor_itenscomp * 1.75)
-where cod_prod = NEW.cod_itenscomp;
+where produto.cod_prod = NEW.cod_prod;
 END; 
 $$ DELIMITER ;
 
 #Questão3
-drop trigger if exists Triguer2
+drop trigger if exists Questao3
 DELIMITER $$ 
-CREATE TRIGGER Triguer2 AFTER INSERT
+CREATE TRIGGER Questao3 AFTER INSERT
 ON Itens_Venda FOR EACH ROW
 BEGIN
-update venda  set valortotal_vend = new.valor_itensvend;
+update venda set valortotal_vend = valortotal_vend + new.valor_itensvend 
+where venda.cod_vend = new.cod_vend;
 
-update produto set quant_prod = quant_prod - new.quant_itensvend;
+update produto set quant_prod = quant_prod - new.quant_itensvend
+where produto.cod_prod = new.cod_prod;
 END; 
 $$ DELIMITER ;
 
 #Questão4
-drop procedure if exists InsertItens_Venda;
+drop procedure if exists InsertItens_VendaQTD;
 DELIMITER $$
-CREATE PROCEDURE InsertItens_Venda (quant_itensvend int, valor_itensvend int, cod_prod2 int, cod_vend int)
+CREATE PROCEDURE InsertItens_VendaQTD (quant_itensvend int, valor_itensvend int, cod_prod2 int, cod_vend int)
 BEGIN 
+
 declare ttt int;
-select produto.quant_prod into ttt from produto where produto.cod_prod = cod_prod2;
+declare nume varchar(50);
+
+select produto.quant_prod, produto.descrição_prod into ttt, nume from produto where produto.cod_prod = cod_prod2;
 
 if (quant_itensvend != '' && quant_itensvend > 0) then
 	if (valor_itensvend != '' && valor_itensvend > 0) then 
 		if (cod_prod2 != '' && cod_prod2 > 0) then 
 			if (cod_vend != '' && cod_vend > 0) then 
-				if (ttt <= 0) then 
+				if (ttt > 0 && ttt >= quant_itensvend) then 
 					insert into Itens_Venda values (null, quant_itensvend, valor_itensvend, cod_prod2, cod_vend);
-					select 'Produto Inserido com Sucesso.' as Msg;
-				else select 'XXXXXXX' as Msg;
-				end if;
+                    select 'Produto Inserido com sucesso.' as Msg;
+				else select concat("A quantidade do produto ", nume, " é de ", ttt, "! Digite uma quantidade valida!") as Msg;
+                end if;
 			else select 'Favor informar o Código da Venda' as Msg;
 			end if;
 		else select 'Favor informar o Código do Produto' as Msg;
@@ -1278,13 +1283,40 @@ end if;
 END;
 $$ DELIMITER ;
 
-call InsertItens_Venda(52, 365, 2, 3);
+call InsertItens_VendaQTD(5, 365, 2, 3);
 select * from Itens_Venda;
-
-#fxjsfhgjkhmj
-
+select * from produto;
+delete from itens_venda where cod_itensvend = 14;
 
 #Questão5
+drop procedure if exists AbrirCaixa;
+DELIMITER $$
+CREATE PROCEDURE AbrirCaixa (cod_caixa2 int, troco double)
+BEGIN 
+
+declare saldoInicial double;
+declare estado varchar(100);
+
+select caixa.saldofinal_caixa into saldoInicial from caixa where caixa.cod_caixa = LAST_INSERT_ID();
+select caixa.status_caixa into estado from caixa where caixa.cod_caixa = cod_caixa2;
+
+if (estado != '' && cod_caixa2 > 0) then 
+	if (estado > 0 && cod_caixa2 > 0) then 
+		insert into Itens_Venda values (null, quant_itensvend, valor_itensvend, cod_prod2, cod_vend);
+        update caixa set status_caixa = 'Aberto', troco_caixa = troco 
+        where caixa.cod_caixa = cod_caixa2;
+		select 'Produto Inserido com sucesso.' as Msg;
+	else select concat("A quantidade do produto ", nume, " é de ", ttt, "! Digite uma quantidade valida!") as Msg;
+	end if;
+else select 'Favor informar o Código da Venda' as Msg;
+end if;
+END;
+$$ DELIMITER ;
+select * from caixa;
+
+#select saldofinal_caixa from caixa where caixa.cod_caixa = LAST_INSERT_ID();
+#select cod_prod, descrição_prod from produto where cod_prod = LAST_INSERT_ID();
+
 #Questão6
 #Questão7
 #Questão8
@@ -1292,15 +1324,10 @@ select * from Itens_Venda;
 #Questão10
 
 
-
-
-SELECT * FROM itens_venda;
-
-
 /*
-drop trigger if exists TriguerX
+drop trigger if exists Questao5XXX
 DELIMITER $$ 
-CREATE TRIGGER TriguerX AFTER XXXXX
+CREATE TRIGGER Questao5XXX AFTER XXXXX
 ON XXXXX FOR EACH ROW
 BEGIN
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx;
