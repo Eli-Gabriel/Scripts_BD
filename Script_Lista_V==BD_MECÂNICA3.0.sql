@@ -1,5 +1,14 @@
 #BD Mecanica 3.0
+/*
+-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-
+O script Ficou muito extenso, por isso esta separado em blocos.
+antes de cada bloco esta uma anotação seguida poelo começo de uma anotação de multiplas linhas,
+basta tirar a anotação(#) para poder minimizar os blocos.
+-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-
+*/
 
+#bloco com a criação do Banco
+#/*
 drop database if exists bd_mecanica;
 create database bd_mecanica;
 use bd_mecanica;
@@ -437,13 +446,11 @@ insert into Pagamentos values (null, curdate(), 0, 'Dinheiro', 6, 2, null, 4);
 insert into Pagamentos values (null, curdate(), 0, 'Débito Conta', 6, 3, 1, null);
 insert into Pagamentos values (null, curdate(), 0, 'Débito Conta', 6, 3, 2, null);
 
+*/
 
-
-
-
-
-
-#Questão1
+#Bloco  com a questão 1.
+#/*
+#Questão1#Questão1#Questão1#Questão1#Questão1
 drop procedure if exists InsertEstado;
 DELIMITER $$
 CREATE PROCEDURE InsertEstado (nome_est varchar(200), sigla varchar(2))
@@ -1213,14 +1220,14 @@ $$ DELIMITER ;
 call DeleteXXX();
 select * from XXX;
 
-
-
 colocar !='0' em todas as chaves estrangeiras
 	!= 0 NÃO, > 0 SIM
 substituir os deletes pelos deletes com Rlike
 */
 
-#Questão2
+#Bloco com o resto das questões.
+#/*
+#Questão2#Questão2#Questão2#Questão2#Questão2
 drop trigger if exists Questao2;
 DELIMITER $$ 
 CREATE TRIGGER Questao2 AFTER INSERT
@@ -1238,7 +1245,7 @@ where produto.cod_prod = NEW.cod_prod;
 END; 
 $$ DELIMITER ;
 
-#Questão3
+#Questão3#Questão3#Questão3#Questão3#Questão3
 drop trigger if exists Questao3
 DELIMITER $$ 
 CREATE TRIGGER Questao3 AFTER INSERT
@@ -1252,7 +1259,7 @@ where produto.cod_prod = new.cod_prod;
 END; 
 $$ DELIMITER ;
 
-#Questão4
+#Questão4#Questão4#Questão4#Questão4#Questão4
 drop procedure if exists InsertItens_VendaQTD;
 DELIMITER $$
 CREATE PROCEDURE InsertItens_VendaQTD (quant_itensvend int, valor_itensvend int, cod_prod2 int, cod_vend int)
@@ -1288,43 +1295,151 @@ select * from Itens_Venda;
 select * from produto;
 delete from itens_venda where cod_itensvend = 14;
 
-#Questão5
+#Questão5#Questão5#Questão5#Questão5#Questão5
 drop procedure if exists AbrirCaixa;
 DELIMITER $$
 CREATE PROCEDURE AbrirCaixa (cod_caixa2 int, troco double)
 BEGIN 
 
-declare saldoInicial double;
+declare PrimeiroSaldo double;
 declare estado varchar(100);
 
-select caixa.saldofinal_caixa into saldoInicial from caixa where caixa.cod_caixa = LAST_INSERT_ID();
+select caixa.saldofinal_caixa into PrimeiroSaldo from caixa where caixa.cod_caixa = LAST_INSERT_ID();
 select caixa.status_caixa into estado from caixa where caixa.cod_caixa = cod_caixa2;
 
-if (estado != '' && cod_caixa2 > 0) then 
-	if (estado > 0 && cod_caixa2 > 0) then 
-		insert into Itens_Venda values (null, quant_itensvend, valor_itensvend, cod_prod2, cod_vend);
-        update caixa set status_caixa = 'Aberto', troco_caixa = troco 
+if (estado = 'Fechado') then 
+	if (estado = 'Aberto') then 
+        update caixa set status_caixa = 'Aberto', troco_caixa = troco, saldoinicial_caixa = PrimeiroSaldo
         where caixa.cod_caixa = cod_caixa2;
-		select 'Produto Inserido com sucesso.' as Msg;
-	else select concat("A quantidade do produto ", nume, " é de ", ttt, "! Digite uma quantidade valida!") as Msg;
+		select 'Caixa aberto com sucesso.' as Msg;
+	else select 'Este Caixa já foi Aberto' as Msg;
 	end if;
-else select 'Favor informar o Código da Venda' as Msg;
+else select 'Este Caixa já foi Fechado' as Msg;
 end if;
 END;
 $$ DELIMITER ;
+
+select * from caixa;
+#select saldofinal_caixa from caixa where caixa.cod_caixa = LAST_INSERT_ID();//TESTESTESTESTESTES
+#select cod_prod, descrição_prod from produto where cod_prod = LAST_INSERT_ID();//TESTESTESTESTESTES
+
+#Questão6#Questão6#Questão6#Questão6#Questão6
+drop procedure if exists FecharCaixa;
+DELIMITER $$
+CREATE PROCEDURE FecharCaixa (cod_caixa2 int)
+BEGIN 
+
+declare estado varchar(100);
+
+select caixa.status_caixa into estado from caixa where caixa.cod_caixa = cod_caixa2;
+
+if (estado = 'Fechado') then 
+	if (estado = 'Criado') then 
+        update caixa set status_caixa = 'Fechado', datafechamento_caixa = curdate(), saldofinal_caixa = valorcréditos_caixa - valordébitos_caixa
+        where caixa.cod_caixa = cod_caixa2;
+		select 'Caixa Fechado com sucesso.' as Msg;
+	else select 'O Caixa precisa antes ser aberto.' as Msg;
+	end if;
+else select 'Este Caixa já foi Fechado' as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
 select * from caixa;
 
-#select saldofinal_caixa from caixa where caixa.cod_caixa = LAST_INSERT_ID();
-#select cod_prod, descrição_prod from produto where cod_prod = LAST_INSERT_ID();
 
-#Questão6
-#Questão7
-#Questão8
-#Questão9
-#Questão10
+#Questão7#Questão7#Questão7#Questão7#Questão7
+drop procedure if exists InsertRecebimentosQTD;
+DELIMITER $$
+CREATE PROCEDURE InsertRecebimentosQTD (cod_funcio int, cod_caixa2 int, cod_vendo int)
+BEGIN
+
+declare valor_receb double;
+declare estado varchar(100);
+declare dept varchar(100);
+
+select venda.valortotal_vend into valor_receb from venda where cod_vend = cod_vendo;
+select caixa.status_caixa into estado from caixa where caixa.cod_caixa = cod_caixa2;
+select departamento.nome_dep into dept from departamento 
+	inner join funcionario on departamento.cod_dep = funcionario.cod_dep
+	where funcionario.cod_func = cod_funcio;
+
+if (estado = 'Aberto') then
+	if (dept = 'Financeiro') then
+		insert into Recebimentos values (null, curdate(), valor_receb, cod_funcio, cod_caixa2, cod_vendo);
+		select 'Recebimento Inserido com Sucesso' as Msg;
+	else select 'Este Funcionario não pertence ao departamento Financeiro.' as Msg;
+	end if;
+else select 'Este Caixa não esta aberto.' as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
+call InsertRecebimentosQTD(6, 3, 1);
+select * from Recebimentos;
+select * from caixa;
+select * from funcionario;
+select * from departamento;
+select * from recebimentos;
+
+#Questão8#Questão8#Questão8#Questão8#Questão8
+drop trigger if exists Questao8
+DELIMITER $$ 
+CREATE TRIGGER Questao8 AFTER INSERT
+ON recebimentos FOR EACH ROW
+BEGIN
+update caixa set valorcréditos_caixa = valorcréditos_caixa + new.valor_receb
+where caixa.cod_caixa = new.cod_caixa;
+END; 
+$$ DELIMITER ;
+
+#Questão9#Questão9#Questão9#Questão9#Questão9
+drop procedure if exists InsertPagamentosQTD;
+DELIMITER $$
+CREATE PROCEDURE InsertPagamentosQTD (formapagamento_pag varchar (100), cod_funcio int, cod_caixa2 int, cod_despe int, cod_comp int)
+BEGIN
+declare valor_pagar float;
+declare estado varchar(100);
+declare dept varchar(100);
+
+select despesas.valor_desp into valor_pagar from despesas where despesas.cod_desp = cod_despe;
+select caixa.status_caixa into estado from caixa where caixa.cod_caixa = cod_caixa2;
+select departamento.nome_dep into dept from departamento 
+	inner join funcionario on departamento.cod_dep = funcionario.cod_dep
+	where funcionario.cod_func = cod_funcio;
+
+if (estado = 'Aberto') then
+	if (dept = 'Financeiro') then
+		insert into Pagamentos values (null, curdate(), valor_pagar, formapagamento_pag, cod_funcio, cod_caixa2, cod_despe, cod_comp);
+		select 'Pagamento inserido com Sucesso' as Msg;
+	else select 'Este Funcionario não pertence ao departamento Financeiro.' as Msg;
+	end if;
+else select 'Este Caixa não esta aberto.' as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
+call InsertPagamentosQTD('HODOR', 6, 3, 1, 1);
+#delete from pagamentos where pagamentos.cod_pag = 7;
+select * from Pagamentos;
+select * from caixa;
+select * from funcionario;
+
+#Questão10#Questão10#Questão10#Questão10#Questão10
+drop trigger if exists Questao10
+DELIMITER $$ 
+CREATE TRIGGER Questao10 AFTER insert
+ON pagamentos FOR EACH ROW
+BEGIN
+update caixa set valordébitos_caixa = valordébitos_caixa + new.valor_pag 
+where caixa.cod_caixa = new.cod_caixa;
+END; 
+$$ DELIMITER ;
+
 
 
 /*
+MODELO
 drop trigger if exists Questao5XXX
 DELIMITER $$ 
 CREATE TRIGGER Questao5XXX AFTER XXXXX
@@ -1334,5 +1449,3 @@ BEGIN
 END; 
 $$ DELIMITER ;
 */
-
-
