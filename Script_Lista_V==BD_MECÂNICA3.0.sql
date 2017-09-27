@@ -4,6 +4,7 @@
 O script Ficou muito extenso, por isso esta separado em blocos.
 antes de cada bloco esta uma anotação seguida poelo começo de uma anotação de multiplas linhas,
 basta tirar a anotação(#) para poder minimizar os blocos.
+Recomendo que rode um bloco por vez(o mysql geralmente para de responder se rodar o Script Completo).
 -LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-LER-
 */
 
@@ -446,7 +447,7 @@ insert into Pagamentos values (null, curdate(), 0, 'Dinheiro', 6, 2, null, 4);
 insert into Pagamentos values (null, curdate(), 0, 'Débito Conta', 6, 3, 1, null);
 insert into Pagamentos values (null, curdate(), 0, 'Débito Conta', 6, 3, 2, null);
 
-*/
+#*/
 
 #Bloco  com a questão 1.
 #/*
