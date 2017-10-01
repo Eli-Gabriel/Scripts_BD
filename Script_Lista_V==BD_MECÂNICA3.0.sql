@@ -1276,10 +1276,13 @@ if (quant_itensvend != '' && quant_itensvend > 0) then
 		if (cod_prod2 != '' && cod_prod2 > 0) then 
 			if (cod_vend != '' && cod_vend > 0) then 
 				if (ttt > 0 && ttt >= quant_itensvend) then 
-					insert into Itens_Venda values (null, quant_itensvend, valor_itensvend, cod_prod2, cod_vend);
-                    select 'Produto Inserido com sucesso.' as Msg;
+					if (cod_prod2 > 0 && cod_vend > 0) then 
+						insert into Itens_Venda values (null, quant_itensvend, valor_itensvend, cod_prod2, cod_vend);
+                    				select 'Produto Inserido com sucesso.' as Msg;
+					else select concat("Produto e/ou venda não existe(m)") as Msg;
+                			end if;
 				else select concat("A quantidade do produto ", nume, " é de ", ttt, "! Digite uma quantidade valida!") as Msg;
-                end if;
+                		end if;
 			else select 'Favor informar o Código da Venda' as Msg;
 			end if;
 		else select 'Favor informar o Código do Produto' as Msg;
@@ -1308,14 +1311,17 @@ declare estado varchar(100);
 select caixa.saldofinal_caixa into PrimeiroSaldo from caixa where caixa.cod_caixa = LAST_INSERT_ID();
 select caixa.status_caixa into estado from caixa where caixa.cod_caixa = cod_caixa2;
 
-if (estado = 'Fechado') then 
-	if (estado = 'Aberto') then 
-        update caixa set status_caixa = 'Aberto', troco_caixa = troco, saldoinicial_caixa = PrimeiroSaldo
-        where caixa.cod_caixa = cod_caixa2;
-		select 'Caixa aberto com sucesso.' as Msg;
-	else select 'Este Caixa já foi Aberto' as Msg;
+if (cod_caixa2 > 0) then 
+	if (estado != 'Fechado') then 
+		if (estado != 'Aberto') then 
+        		update caixa set status_caixa = 'Aberto', troco_caixa = troco, saldoinicial_caixa = PrimeiroSaldo
+        		where caixa.cod_caixa = cod_caixa2;
+			select 'Caixa aberto com sucesso.' as Msg;
+		else select 'Este Caixa já esta Aberto' as Msg;
+		end if;
+	else select 'Este Caixa já foi Fechado' as Msg;
 	end if;
-else select 'Este Caixa já foi Fechado' as Msg;
+else select 'Este Caixa não existe.' as Msg;
 end if;
 END;
 $$ DELIMITER ;
@@ -1334,14 +1340,17 @@ declare estado varchar(100);
 
 select caixa.status_caixa into estado from caixa where caixa.cod_caixa = cod_caixa2;
 
-if (estado = 'Fechado') then 
-	if (estado = 'Criado') then 
-        update caixa set status_caixa = 'Fechado', datafechamento_caixa = curdate(), saldofinal_caixa = valorcréditos_caixa - valordébitos_caixa
-        where caixa.cod_caixa = cod_caixa2;
-		select 'Caixa Fechado com sucesso.' as Msg;
-	else select 'O Caixa precisa antes ser aberto.' as Msg;
+if (cod_caixa2 > 0) then 
+	if (estado != 'Fechado') then 
+		if (estado != 'Criado') then 
+        		update caixa set status_caixa = 'Fechado', datafechamento_caixa = curdate(), saldofinal_caixa = valorcréditos_caixa - valordébitos_caixa
+        		where caixa.cod_caixa = cod_caixa2;
+			select 'Caixa Fechado com sucesso.' as Msg;
+		else select 'O Caixa precisa antes ser aberto.' as Msg;
+		end if;
+	else select 'Este Caixa já foi Fechado' as Msg;
 	end if;
-else select 'Este Caixa já foi Fechado' as Msg;
+else select 'Este Caixa não existe.' as Msg;
 end if;
 END;
 $$ DELIMITER ;
@@ -1365,13 +1374,16 @@ select departamento.nome_dep into dept from departamento
 	inner join funcionario on departamento.cod_dep = funcionario.cod_dep
 	where funcionario.cod_func = cod_funcio;
 
-if (estado = 'Aberto') then
-	if (dept = 'Financeiro') then
-		insert into Recebimentos values (null, curdate(), valor_receb, cod_funcio, cod_caixa2, cod_vendo);
-		select 'Recebimento Inserido com Sucesso' as Msg;
-	else select 'Este Funcionario não pertence ao departamento Financeiro.' as Msg;
+if (cod_funcio > 0 && cod_caixa2 > 0 && cod_vendo > 0) then
+	if (estado = 'Aberto') then
+		if (dept = 'Financeiro') then
+			insert into Recebimentos values (null, curdate(), valor_receb, cod_funcio, cod_caixa2, cod_vendo);
+			select 'Recebimento Inserido com Sucesso' as Msg;
+		else select 'Este Funcionario não pertence ao departamento Financeiro.' as Msg;
+		end if;
+	else select 'Este Caixa não esta aberto.' as Msg;
 	end if;
-else select 'Este Caixa não esta aberto.' as Msg;
+else select 'Dados incompletos ou incorretos.' as Msg;
 end if;
 END;
 $$ DELIMITER ;
@@ -1409,13 +1421,16 @@ select departamento.nome_dep into dept from departamento
 	inner join funcionario on departamento.cod_dep = funcionario.cod_dep
 	where funcionario.cod_func = cod_funcio;
 
-if (estado = 'Aberto') then
-	if (dept = 'Financeiro') then
-		insert into Pagamentos values (null, curdate(), valor_pagar, formapagamento_pag, cod_funcio, cod_caixa2, cod_despe, cod_comp);
-		select 'Pagamento inserido com Sucesso' as Msg;
-	else select 'Este Funcionario não pertence ao departamento Financeiro.' as Msg;
+if (cod_funcio > 0 && cod_caixa2 > 0 && cod_despe > 0 && cod_comp > 0) then
+	if (estado = 'Aberto') then
+		if (dept = 'Financeiro') then
+			insert into Pagamentos values (null, curdate(), valor_pagar, formapagamento_pag, cod_funcio, cod_caixa2, cod_despe, cod_comp);
+			select 'Pagamento inserido com Sucesso' as Msg;
+		else select 'Este Funcionario não pertence ao departamento Financeiro.' as Msg;
+		end if;
+	else select 'Este Caixa não esta aberto.' as Msg;
 	end if;
-else select 'Este Caixa não esta aberto.' as Msg;
+else select 'Dados incompletos ou incorretos' as Msg;
 end if;
 END;
 $$ DELIMITER ;
