@@ -36,6 +36,14 @@ Foreign Key (id_player) REFERENCES jogador(idjogador),
 Foreign Key (id_magia) REFERENCES magias(id_magia)
 );
 
+create table iten_has_jogador(
+id int not null primary key auto_increment,
+id_player int not null,
+id_iten int not null,
+Foreign Key (id_player) REFERENCES jogador(idjogador),
+Foreign Key (id_iten) REFERENCES itens(item_id)
+);
+
 
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Cópia de Criatura", "Este encanto permitirá que você faça aparecer uma réplica perfeita de qualquer criatura contra a qual você esteja lutando. A réplica terá os mesmos índices de HABILIDADE e ENERGIA e os mesmos poderes do original. Mas a réplica estará sob seu controle, e você poderá, por exemplo, instruí-la para que ataque a criatura original e ficar assistindo a batalha de camarote!");
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Percepção Extra-Sensorial", "Com este encanto, você poderá sintonizar comprimentos de ondas psíquicas. Isso poderá ajudá-lo a ler a mente de uma criatura ou descobrir o que está por trás de uma porta trancada. Porém, às vezes, este encanto pode dar informações equivocadas, se houver mais de uma fonte psíquica perto de uma outra.");
