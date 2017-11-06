@@ -8,8 +8,11 @@ create table jogador(
 idjogador int not null primary key auto_increment,
 nome VARCHAR(45),
 energia_inicial INT NULL,
+energia_atual INT NULL,
 habilidade_inicial INT NULL,
+habilidade_atual INT NULL,
 sorte_inicial INT NULL,
+sorte_atual INT NULL,
 magia_inicial INT NULL,
 pag_atual INT NULL
 );
