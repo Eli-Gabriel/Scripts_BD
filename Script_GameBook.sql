@@ -41,7 +41,8 @@ Foreign Key (id_magia) REFERENCES magias(id_magia)
 
 select  jogador.nome, magias.magia_nome from jogador 
 inner join magia_has_jogador on jogador.idjogador = magia_has_jogador.id_player
-inner join magias on magia_has_jogador.id_magia = magias.id_magia;
+inner join magias on magia_has_jogador.id_magia = magias.id_magia
+where jogador.idjogador = 2;
 
 
 select * from itens;
@@ -96,14 +97,19 @@ end if;
 END;
 $$ DELIMITER ;
 
-call VerificarMagia(1,7);
+call VerificarMagia(2,4);
 
 select * from magia_has_jogador;
 
+select  jogador.nome, magias.magia_nome, magias.id_magia from jogador 
+inner join magia_has_jogador on jogador.idjogador = magia_has_jogador.id_player
+inner join magias on magia_has_jogador.id_magia = magias.id_magia
+where jogador.idjogador = 2;
 
 
-#verifica se o joador tem o iten e o exclui de positivo
-DROP PROCEDURE IF EXISTS VerificarIten;
+
+
+#####verifica se o joador tem o iten e o exclui de positivo
 DROP PROCEDURE IF EXISTS VerificarIten;
 DELIMITER $$
 CREATE PROCEDURE VerificarIten (id_JOG INT, itenDC VARCHAR(45))
@@ -125,10 +131,24 @@ $$ DELIMITER ;
 
 
 
+####################FUNÇÕES####################
+
+drop function if exists VerificarHP;
+DELIMITER $$
+CREATE FUNCTION VerificarHP (cod_jog int)
+RETURNS integer
+BEGIN
+
+DECLARE hp integer;
+
+select jogador.energia_atual into hp from jogador where jogador.idjogador = cod_jog;
+
+return hp;
+END;
+$$ DELIMITER ;
 
 
-
-
+select VerificarHP(1);
 
 
 
