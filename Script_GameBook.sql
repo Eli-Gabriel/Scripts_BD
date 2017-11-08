@@ -2,8 +2,7 @@ drop database if exists gamebook;
 create database gamebook;
 use gamebook ;
 
-
-
+####################TABELAS####################
 create table jogador(
 idjogador int not null primary key auto_increment,
 nome VARCHAR(45),
@@ -39,15 +38,19 @@ Foreign Key (id_player) REFERENCES jogador(idjogador),
 Foreign Key (id_magia) REFERENCES magias(id_magia)
 );
 
-create table iten_has_jogador(
-id int not null primary key auto_increment,
-id_player int not null,
-id_iten int not null,
-Foreign Key (id_player) REFERENCES jogador(idjogador),
-Foreign Key (id_iten) REFERENCES itens(item_id)
-);
+
+select  jogador.nome, magias.magia_nome from jogador 
+inner join magia_has_jogador on jogador.idjogador = magia_has_jogador.id_player
+inner join magias on magia_has_jogador.id_magia = magias.id_magia;
 
 
+select * from itens;
+select * from magia_has_jogador;
+select * from magias;
+select * from jogador;
+
+
+####################INSERTS#########################
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Cópia de Criatura", "Este encanto permitirá que você faça aparecer uma réplica perfeita de qualquer criatura contra a qual você esteja lutando. A réplica terá os mesmos índices de HABILIDADE e ENERGIA e os mesmos poderes do original. Mas a réplica estará sob seu controle, e você poderá, por exemplo, instruí-la para que ataque a criatura original e ficar assistindo a batalha de camarote!");
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Percepção Extra-Sensorial", "Com este encanto, você poderá sintonizar comprimentos de ondas psíquicas. Isso poderá ajudá-lo a ler a mente de uma criatura ou descobrir o que está por trás de uma porta trancada. Porém, às vezes, este encanto pode dar informações equivocadas, se houver mais de uma fonte psíquica perto de uma outra.");
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Fogo", "Todas as criaturas têm medo do fogo, e este encanto dá o poder de fazer aparecer fogo segundo a sua vontade. Você poderá causar uma pequena explosão no chão que queimará por vários segundos ou criar uma barreira de fogo para manter criaturas à distância.");
@@ -60,3 +63,97 @@ INSERT INTO magias (magia_nome, magia_desc) VALUES ("Habilidade", "Este encanto 
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Energia", "Este encanto recuperará o seu índice de Energia, aumentando-o em metade de seu valor Inicial, e pode ser lançado a qualquer momento durante a sua aventura. Veja o Encanto da Sorte para conhecer as regras completas.");
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Força", "Este encanto tem o efeito de aumentar muito a sua força, e é muito útil quando se luta contra criaturas fortes. Porem, deve ser utilizado com cautela, já que é difícil controlar a sua própria força quando ela aumenta demais!");
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Fraqueza", "Criaturas fortes são reduzidas por este encanto a miseráveis fracotes. Não tem efeito contra todas as criaturas, mas, quando tem efeito, a criatura se torna frágil e muito menos perigosa em uma batalha.");
+
+INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('1', '3');
+INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('1', '7');
+INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('1', '7');
+INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('1', '8');
+INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('1', '10');
+INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('2', '4');
+INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('2', '7');
+
+
+
+
+
+####################PROCEDURES####################
+#verifica se o joador tem a magia e a exclui de positivo
+DROP PROCEDURE IF EXISTS VerificarMagia;
+DELIMITER $$
+CREATE PROCEDURE VerificarMagia (id_JOG INT, id_SPEEL INT)
+BEGIN
+
+declare contagem INT;
+
+select  count(magia_has_jogador.id_magia) INTO contagem from magia_has_jogador
+where magia_has_jogador.id_magia = id_SPEEL AND magia_has_jogador.id_player = id_JOG;
+
+if(contagem >0) then
+	delete from magia_has_jogador where magia_has_jogador.id_magia = id_SPEEL AND magia_has_jogador.id_player = id_JOG LIMIT 1;
+else select 'Favor informar o Função' as Msg;
+end if;
+
+END;
+$$ DELIMITER ;
+
+call VerificarMagia(1,7);
+
+select * from magia_has_jogador;
+
+
+
+#verifica se o joador tem o iten e o exclui de positivo
+DROP PROCEDURE IF EXISTS VerificarIten;
+DROP PROCEDURE IF EXISTS VerificarIten;
+DELIMITER $$
+CREATE PROCEDURE VerificarIten (id_JOG INT, itenDC VARCHAR(45))
+BEGIN
+
+declare contagem INT;
+
+select  count(itens.item_nome) INTO contagem from itens
+where itens.item_nome = itenDC AND itens.id_player = id_JOG;
+
+if(contagem >0) then
+	delete from itens where itens.item_nome = itenDC AND itens.id_player = id_JOG LIMIT 1;
+else select 'Favor informar o Função' as Msg;
+end if;
+
+END;
+$$ DELIMITER ;
+
+
+
+
+
+
+
+
+
+
+
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
