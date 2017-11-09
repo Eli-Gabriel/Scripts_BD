@@ -39,11 +39,11 @@ Foreign Key (id_magia) REFERENCES magias(id_magia)
 );
 
 
+
 select  jogador.nome, magias.magia_nome from jogador 
 inner join magia_has_jogador on jogador.idjogador = magia_has_jogador.id_player
 inner join magias on magia_has_jogador.id_magia = magias.id_magia
 where jogador.idjogador = 2;
-
 
 select * from itens;
 select * from magia_has_jogador;
@@ -51,7 +51,19 @@ select * from magias;
 select * from jogador;
 
 
+
+/*
+Você começará a sua aventura com um mínimo essencial de equipamento. 
+Você está armado com uma espada e vestido com uma armadura de couro. 
+Você está levando uma lanterna para iluminar o seu caminho, e uma mochila para guardar quaisquer tesouros ou artefatos que possa encontrar no caminho. 
+Não se esqueça de registrar tudo que você achar no quadro de Equipamento da sua Folha de Aventuras. 
+Quando eles forem usados em qualquer encontro específico, a história dirá a você se aquele item deve ser destruído ou deixado para trás. 
+Se for perdido dessa forma, você terá que riscá-lo de sua lista de Equipamentos e não poderá usá-lo mais tarde durante a sua aventura.
+*/
 ####################INSERTS#########################
+INSERT INTO `gamebook`.`jogador` (`nome`, `energia_inicial`, `energia_atual`, `habilidade_inicial`, `habilidade_atual`, `sorte_inicial`, `sorte_atual`, `magia_inicial`) VALUES ('srtg', '52', '52', '15', '15', '89', '89', '99999');
+INSERT INTO `gamebook`.`jogador` (`nome`, `energia_inicial`, `energia_atual`, `habilidade_inicial`, `habilidade_atual`, `sorte_inicial`, `sorte_atual`, `magia_inicial`) VALUES ('cxv', '45', '45', '32', '32', '48', '48', '52');
+
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Cópia de Criatura", "Este encanto permitirá que você faça aparecer uma réplica perfeita de qualquer criatura contra a qual você esteja lutando. A réplica terá os mesmos índices de HABILIDADE e ENERGIA e os mesmos poderes do original. Mas a réplica estará sob seu controle, e você poderá, por exemplo, instruí-la para que ataque a criatura original e ficar assistindo a batalha de camarote!");
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Percepção Extra-Sensorial", "Com este encanto, você poderá sintonizar comprimentos de ondas psíquicas. Isso poderá ajudá-lo a ler a mente de uma criatura ou descobrir o que está por trás de uma porta trancada. Porém, às vezes, este encanto pode dar informações equivocadas, se houver mais de uma fonte psíquica perto de uma outra.");
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Fogo", "Todas as criaturas têm medo do fogo, e este encanto dá o poder de fazer aparecer fogo segundo a sua vontade. Você poderá causar uma pequena explosão no chão que queimará por vários segundos ou criar uma barreira de fogo para manter criaturas à distância.");
@@ -73,9 +85,10 @@ INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('1', '10');
 INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('2', '4');
 INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('2', '7');
 
-
-
-
+INSERT INTO `gamebook`.`itens` (`item_nome`, `item_desc`, `id_player`) VALUES ('lanterna', 'ilumina', '1');
+INSERT INTO `gamebook`.`itens` (`item_nome`, `item_desc`, `id_player`) VALUES ('lenterna', 'illumina', '2');
+INSERT INTO `gamebook`.`itens` (`item_nome`, `item_desc`, `id_player`) VALUES ('armadura de couro', 'protege', '1');
+INSERT INTO `gamebook`.`itens` (`item_nome`, `item_desc`, `id_player`) VALUES ('armadura de couro', 'protege', '2');
 
 ####################PROCEDURES####################
 #verifica se o joador tem a magia e a exclui de positivo
@@ -91,7 +104,7 @@ where magia_has_jogador.id_magia = id_SPEEL AND magia_has_jogador.id_player = id
 
 if(contagem >0) then
 	delete from magia_has_jogador where magia_has_jogador.id_magia = id_SPEEL AND magia_has_jogador.id_player = id_JOG LIMIT 1;
-else select 'Favor informar o Função' as Msg;
+else select 'Jogador não possui a magia.' as Msg;
 end if;
 
 END;
@@ -103,8 +116,7 @@ select * from magia_has_jogador;
 
 select  jogador.nome, magias.magia_nome, magias.id_magia from jogador 
 inner join magia_has_jogador on jogador.idjogador = magia_has_jogador.id_player
-inner join magias on magia_has_jogador.id_magia = magias.id_magia
-where jogador.idjogador = 2;
+inner join magias on magia_has_jogador.id_magia = magias.id_magia;
 
 
 
@@ -128,11 +140,135 @@ end if;
 END;
 $$ DELIMITER ;
 
+call VerificarIten(1, 'lanterna');
 
+select * from itens;
+####################
+DROP PROCEDURE IF EXISTS RestaurarStatus;
+DELIMITER $$
+CREATE PROCEDURE RestaurarStatus (id_JOG INT)
+BEGIN
+ update jogador set energia_atual = energia_inicial where jogador.idjogador = id_JOG; 
+ update jogador set habilidade_atual = habilidade_inicial where jogador.idjogador = id_JOG; 
+ update jogador set sorte_atual = sorte_inicial where jogador.idjogador = id_JOG; 
+END;
+$$ DELIMITER ;
+
+select  jogador.energia_inicial, jogador.energia_atual, jogador.habilidade_inicial, jogador.habilidade_atual, jogador.sorte_inicial, jogador.sorte_atual from jogador
+where jogador.idjogador = 1;
+
+call RestaurarStatus(1);
+####################
+####################
+####################
+DROP PROCEDURE IF EXISTS AlterarVitalidade;
+DELIMITER $$
+CREATE PROCEDURE AlterarVitalidade (id_JOG INT, qtd int)
+BEGIN
+
+declare hp_inicial INT;
+declare hp INT;
+
+select  jogador.energia_inicial, jogador.energia_atual INTO hp_inicial, hp from jogador
+where jogador.idjogador = id_JOG;
+
+if (hp+qtd < hp_inicial ) then
+ update jogador set jogador.energia_atual = jogador.energia_atual + qtd;
+else update jogador set jogador.energia_atual = jogador.energia_inicial;
+end if; 
+
+END;
+$$ DELIMITER ;
+
+DROP PROCEDURE IF EXISTS AlterarHabilidade;
+DELIMITER $$
+CREATE PROCEDURE AlterarHabilidade (id_JOG INT, qtd int)
+BEGIN
+
+declare hab_inicial int;
+declare hab int;
+
+select  jogador.habilidade_inicial, jogador.habilidade_atual INTO hab_inicial, hab from jogador
+where jogador.idjogador = id_JOG;
+
+if (hp+qtd < hab_inicial ) then
+ update jogador set jogador.habilidade_atual = jogador.habilidade_atual + qtd;
+else update jogador set jogador.habilidade_atual = jogador.habilidade_inicial;
+end if; 
+
+END;
+$$ DELIMITER ;
+
+DROP PROCEDURE IF EXISTS AlterarSorte;
+DELIMITER $$
+CREATE PROCEDURE AlterarSorte (id_JOG INT, qtd int)
+BEGIN
+
+declare sorte_inicial int;
+declare sorte int;
+
+select  jogador.sorte_inicial, jogador.sorte_atual INTO sorte_inicial, sorte from jogador
+where jogador.idjogador = id_JOG;
+
+if (sorte+qtd < sorte_inicial ) then
+ update jogador set jogador.sorte_atual = jogador.sorte_atual + qtd;
+else update jogador set jogador.sorte_atual = jogador.sorte_inicial;
+end if; 
+
+END;
+$$ DELIMITER ;
+
+/* Rascunho dos procedures acima
+DROP PROCEDURE IF EXISTS RecoverStatus;
+DELIMITER $$
+CREATE PROCEDURE RecoverStatus (id_JOG INT, stat int, qtd int)
+BEGIN
+
+declare hp_inicial INT;
+declare hp INT;
+declare hab_inicial int;
+declare hab int;
+declare sorte_inicial int;
+declare sorte int;
+
+select  jogador.energia_inicial, jogador.energia_atual, jogador.habilidade_inicial, jogador.habilidade_atual, jogador.sorte_inicial, jogador.sorte_atual 
+INTO hp_inicial, hp, hab_inicial, hab, sorte_inicial, sorte from jogador
+where jogador.idjogador = id_JOG;
+
+if(stat = 1) then
+	if(stat = 2) then
+		if(stat = 3) then
+			delete from itens where itens.item_nome = itenDC AND itens.id_player = id_JOG LIMIT 1;
+		else select 'Favor informar o Função' as Msg;
+		end if;
+	else select 'Favor informar o Função' as Msg;
+	end if;
+else select 'Favor informar o Função' as Msg;
+end if;
+
+
+update jogador set energia_atual = energia_inicial where jogador.idjogador = id_JOG; 
+update jogador set habilidade_atual = habilidade_inicial where jogador.idjogador = id_JOG; 
+update jogador set sorte_atual = sorte_inicial where jogador.idjogador = id_JOG; 
+
+END;
+$$ DELIMITER ;
+
+select  jogador.energia_inicial, jogador.energia_atual, jogador.habilidade_inicial, jogador.habilidade_atual, jogador.sorte_inicial, jogador.sorte_atual from jogador
+where jogador.idjogador = 1;
+
+call RestaurarStatus(1);
+///*
+update jogador set energia_atual = energia_atual - 5  where jogador.idjogador = 1; 
+update jogador set habilidade_atual = habilidade_atual - 5 where jogador.idjogador = 1; 
+update jogador set sorte_atual = sorte_atual - 5 where jogador.idjogador = 1; 
+*/
+####################
+####################
+####################
 
 
 ####################FUNÇÕES####################
-
 drop function if exists VerificarHP;
 DELIMITER $$
 CREATE FUNCTION VerificarHP (cod_jog int)
@@ -147,10 +283,35 @@ return hp;
 END;
 $$ DELIMITER ;
 
-
 select VerificarHP(1);
 
 
+
+
+
+drop function if exists VerificarIten
+DELIMITER $$
+CREATE FUNCTION VerificarIten (cod_jog int)
+RETURNS boolean
+BEGIN
+
+declare contagem int;
+
+select  count(itens.item_nome) INTO contagem from itens
+where itens.item_nome = itenDC AND itens.id_player = id_JOG;
+
+if(contagem >0) then
+	return true;
+else return false;
+end if;
+
+END;
+$$ DELIMITER ;
+
+
+
+select  count(itens.item_nome) from itens
+where itens.id_player = 1;
 
 ####################################################################################################
 ####################################################################################################
