@@ -51,15 +51,6 @@ select * from magias;
 select * from jogador;
 
 
-
-/*
-Você começará a sua aventura com um mínimo essencial de equipamento. 
-Você está armado com uma espada e vestido com uma armadura de couro. 
-Você está levando uma lanterna para iluminar o seu caminho, e uma mochila para guardar quaisquer tesouros ou artefatos que possa encontrar no caminho. 
-Não se esqueça de registrar tudo que você achar no quadro de Equipamento da sua Folha de Aventuras. 
-Quando eles forem usados em qualquer encontro específico, a história dirá a você se aquele item deve ser destruído ou deixado para trás. 
-Se for perdido dessa forma, você terá que riscá-lo de sua lista de Equipamentos e não poderá usá-lo mais tarde durante a sua aventura.
-*/
 ####################INSERTS#########################
 INSERT INTO `gamebook`.`jogador` (`nome`, `energia_inicial`, `energia_atual`, `habilidade_inicial`, `habilidade_atual`, `sorte_inicial`, `sorte_atual`, `magia_inicial`) VALUES ('srtg', '52', '52', '15', '15', '89', '89', '99999');
 INSERT INTO `gamebook`.`jogador` (`nome`, `energia_inicial`, `energia_atual`, `habilidade_inicial`, `habilidade_atual`, `sorte_inicial`, `sorte_atual`, `magia_inicial`) VALUES ('cxv', '45', '45', '32', '32', '48', '48', '52');
@@ -86,7 +77,7 @@ INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('2', '4');
 INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('2', '7');
 
 INSERT INTO `gamebook`.`itens` (`item_nome`, `item_desc`, `id_player`) VALUES ('lanterna', 'ilumina', '1');
-INSERT INTO `gamebook`.`itens` (`item_nome`, `item_desc`, `id_player`) VALUES ('lenterna', 'illumina', '2');
+INSERT INTO `gamebook`.`itens` (`item_nome`, `item_desc`, `id_player`) VALUES ('lanterna', 'illumina', '2');
 INSERT INTO `gamebook`.`itens` (`item_nome`, `item_desc`, `id_player`) VALUES ('armadura de couro', 'protege', '1');
 INSERT INTO `gamebook`.`itens` (`item_nome`, `item_desc`, `id_player`) VALUES ('armadura de couro', 'protege', '2');
 
@@ -134,15 +125,17 @@ where itens.item_nome = itenDC AND itens.id_player = id_JOG;
 
 if(contagem >0) then
 	delete from itens where itens.item_nome = itenDC AND itens.id_player = id_JOG LIMIT 1;
-else select 'Favor informar o Função' as Msg;
+else select 'Impossivel excluir' as Msg;
 end if;
 
 END;
 $$ DELIMITER ;
 
-call VerificarIten(1, 'lanterna');
+call VerificarIten(2, 'lenterna');
 
 select * from itens;
+
+
 ####################
 DROP PROCEDURE IF EXISTS RestaurarStatus;
 DELIMITER $$
@@ -217,58 +210,13 @@ end if;
 
 END;
 $$ DELIMITER ;
-
-/* Rascunho dos procedures acima
-DROP PROCEDURE IF EXISTS RecoverStatus;
-DELIMITER $$
-CREATE PROCEDURE RecoverStatus (id_JOG INT, stat int, qtd int)
-BEGIN
-
-declare hp_inicial INT;
-declare hp INT;
-declare hab_inicial int;
-declare hab int;
-declare sorte_inicial int;
-declare sorte int;
-
-select  jogador.energia_inicial, jogador.energia_atual, jogador.habilidade_inicial, jogador.habilidade_atual, jogador.sorte_inicial, jogador.sorte_atual 
-INTO hp_inicial, hp, hab_inicial, hab, sorte_inicial, sorte from jogador
-where jogador.idjogador = id_JOG;
-
-if(stat = 1) then
-	if(stat = 2) then
-		if(stat = 3) then
-			delete from itens where itens.item_nome = itenDC AND itens.id_player = id_JOG LIMIT 1;
-		else select 'Favor informar o Função' as Msg;
-		end if;
-	else select 'Favor informar o Função' as Msg;
-	end if;
-else select 'Favor informar o Função' as Msg;
-end if;
-
-
-update jogador set energia_atual = energia_inicial where jogador.idjogador = id_JOG; 
-update jogador set habilidade_atual = habilidade_inicial where jogador.idjogador = id_JOG; 
-update jogador set sorte_atual = sorte_inicial where jogador.idjogador = id_JOG; 
-
-END;
-$$ DELIMITER ;
-
-select  jogador.energia_inicial, jogador.energia_atual, jogador.habilidade_inicial, jogador.habilidade_atual, jogador.sorte_inicial, jogador.sorte_atual from jogador
-where jogador.idjogador = 1;
-
-call RestaurarStatus(1);
-///*
-update jogador set energia_atual = energia_atual - 5  where jogador.idjogador = 1; 
-update jogador set habilidade_atual = habilidade_atual - 5 where jogador.idjogador = 1; 
-update jogador set sorte_atual = sorte_atual - 5 where jogador.idjogador = 1; 
-*/
 ####################
 ####################
 ####################
 
 
 ####################FUNÇÕES####################
+#vertifica a vitalidade do jogador
 drop function if exists VerificarHP;
 DELIMITER $$
 CREATE FUNCTION VerificarHP (cod_jog int)
@@ -287,11 +235,11 @@ select VerificarHP(1);
 
 
 
-
-
+####################
+#verifica se o jogador possui tal iten
 drop function if exists VerificarIten
 DELIMITER $$
-CREATE FUNCTION VerificarIten (cod_jog int)
+CREATE FUNCTION VerificarIten (cod_jog int, itenDC varchar(50))
 RETURNS boolean
 BEGIN
 
@@ -308,12 +256,50 @@ end if;
 END;
 $$ DELIMITER ;
 
-
-
 select  count(itens.item_nome) from itens
 where itens.id_player = 1;
 
-####################################################################################################
+
+
+
+#verifica se o jogador possui tal magia
+drop function if exists VerificarMagia
+DELIMITER $$
+CREATE FUNCTION VerificarMagia (cod_jog int, magiaCOD int)
+RETURNS boolean
+BEGIN
+
+declare contagem int;
+
+select  count(magia_has_jogador.id_magia) INTO contagem from magia_has_jogador
+where magia_has_jogador.id_magia = magiaCOD AND magia_has_jogador.id_player = cod_jog;
+
+if(contagem >0) then
+	return true;
+else return false;
+end if;
+
+END;
+$$ DELIMITER ;
+
+
+
+
+####################TRIGGERS####################
+drop trigger if exists itenInsert;
+DELIMITER $$ 
+CREATE TRIGGER itenInsert AFTER insert
+ON jogador FOR EACH ROW
+BEGIN
+
+insert into itens (item_nome, id_player) values('Lanterna', new.idjogador);
+insert into itens (item_nome, id_player) values('Espada', new.idjogador);
+
+END; 
+$$ DELIMITER ;
+
+
+###################################################################################################
 ####################################################################################################
 ####################################################################################################
 ####################################################################################################
