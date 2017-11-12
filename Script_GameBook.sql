@@ -39,11 +39,12 @@ Foreign Key (id_magia) REFERENCES magias(id_magia)
 );
 
 
-
+#/*
 select  jogador.nome, magias.magia_nome from jogador 
 inner join magia_has_jogador on jogador.idjogador = magia_has_jogador.id_player
 inner join magias on magia_has_jogador.id_magia = magias.id_magia
 where jogador.idjogador = 2;
+#/*/
 
 select * from itens;
 select * from magia_has_jogador;
@@ -102,15 +103,10 @@ END;
 $$ DELIMITER ;
 
 call VerificarMagia(2,4);
-
 select * from magia_has_jogador;
-
 select  jogador.nome, magias.magia_nome, magias.id_magia from jogador 
 inner join magia_has_jogador on jogador.idjogador = magia_has_jogador.id_player
 inner join magias on magia_has_jogador.id_magia = magias.id_magia;
-
-
-
 
 #####verifica se o joador tem o iten e o exclui de positivo
 DROP PROCEDURE IF EXISTS VerificarIten;
@@ -233,11 +229,11 @@ $$ DELIMITER ;
 
 select VerificarHP(1);
 
-
+select * from jogador;
 
 ####################
 #verifica se o jogador possui tal iten
-drop function if exists VerificarIten
+drop function if exists VerificarIten;
 DELIMITER $$
 CREATE FUNCTION VerificarIten (cod_jog int, itenDC varchar(50))
 RETURNS boolean
@@ -246,7 +242,7 @@ BEGIN
 declare contagem int;
 
 select  count(itens.item_nome) INTO contagem from itens
-where itens.item_nome = itenDC AND itens.id_player = id_JOG;
+where itens.item_nome = itenDC AND itens.id_player = cod_jog;
 
 if(contagem >0) then
 	return true;
@@ -256,11 +252,8 @@ end if;
 END;
 $$ DELIMITER ;
 
-select  count(itens.item_nome) from itens
-where itens.id_player = 1;
-
-
-
+select  VerificarIten (1, 'lanterna');
+select * from itens;
 
 #verifica se o jogador possui tal magia
 drop function if exists VerificarMagia
@@ -282,7 +275,9 @@ end if;
 END;
 $$ DELIMITER ;
 
+select * from magia_has_jogador;
 
+select VerificarMagia(1, 3);
 
 
 ####################TRIGGERS####################
@@ -298,6 +293,17 @@ insert into itens (item_nome, id_player) values('Espada', new.idjogador);
 END; 
 $$ DELIMITER ;
 
+####################VIEWS####################
+drop view if exists Jogador__Magia;
+create view Jogador__Magia as 
+select  jogador.idjogador, jogador.nome, magias.magia_nome, magias.id_magia from jogador 
+inner join magia_has_jogador on jogador.idjogador = magia_has_jogador.id_player
+inner join magias on magia_has_jogador.id_magia = magias.id_magia
+where jogador.idjogador = magia_has_jogador.id_player
+and magia_has_jogador.id_magia = magias.id_magia;
+
+select * from jogador__magia;
+select * from magia_has_jogador;
 
 ###################################################################################################
 ####################################################################################################
