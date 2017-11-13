@@ -104,6 +104,7 @@ $$ DELIMITER ;
 
 call VerificarMagia(2,4);
 select * from magia_has_jogador;
+
 select  jogador.nome, magias.magia_nome, magias.id_magia from jogador 
 inner join magia_has_jogador on jogador.idjogador = magia_has_jogador.id_player
 inner join magias on magia_has_jogador.id_magia = magias.id_magia;
@@ -111,7 +112,7 @@ inner join magias on magia_has_jogador.id_magia = magias.id_magia;
 #####verifica se o joador tem o iten e o exclui de positivo
 DROP PROCEDURE IF EXISTS VerificarIten;
 DELIMITER $$
-CREATE PROCEDURE VerificarIten (id_JOG INT, itenDC VARCHAR(45))
+CREATE PROCEDURE VerificarIten (in id_JOG INT, in itenDC VARCHAR(45))
 BEGIN
 
 declare contagem INT;
@@ -127,7 +128,7 @@ end if;
 END;
 $$ DELIMITER ;
 
-call VerificarIten(2, 'lenterna');
+call VerificarIten(12, 'lanterna');
 
 select * from itens;
 
@@ -238,22 +239,33 @@ DELIMITER $$
 CREATE FUNCTION VerificarIten (cod_jog int, itenDC varchar(50))
 RETURNS boolean
 BEGIN
-
+declare verifica boolean;
 declare contagem int;
 
 select  count(itens.item_nome) INTO contagem from itens
 where itens.item_nome = itenDC AND itens.id_player = cod_jog;
 
 if(contagem >0) then
-	return true;
-else return false;
+	set verifica = true;
+else 
+	set verifica = false; 
 end if;
+
+return verifica;
 
 END;
 $$ DELIMITER ;
 
-select  VerificarIten (1, 'lanterna');
+select VerificarIten (2, 'lanterna');
 select * from itens;
+
+
+
+
+
+
+
+
 
 #verifica se o jogador possui tal magia
 drop function if exists VerificarMagia
