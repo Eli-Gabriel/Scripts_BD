@@ -13,7 +13,8 @@ habilidade_atual INT NULL,
 sorte_inicial INT NULL,
 sorte_atual INT NULL,
 magia_inicial INT NULL,
-pag_atual INT NULL
+pag_atual INT NULL,
+ouro int
 );
 
 create table itens (
@@ -38,18 +39,10 @@ Foreign Key (id_player) REFERENCES jogador(idjogador),
 Foreign Key (id_magia) REFERENCES magias(id_magia)
 );
 
-
-#/*
-select  jogador.nome, magias.magia_nome from jogador 
-inner join magia_has_jogador on jogador.idjogador = magia_has_jogador.id_player
-inner join magias on magia_has_jogador.id_magia = magias.id_magia
-where jogador.idjogador = 2;
-#/*/
-
-select * from itens;
-select * from magia_has_jogador;
-select * from magias;
 select * from jogador;
+select * from itens;
+select * from magias;
+select * from magia_has_jogador;
 
 
 ####################INSERTS#########################
@@ -105,9 +98,11 @@ $$ DELIMITER ;
 call VerificarMagia(2,4);
 select * from magia_has_jogador;
 
+/*
 select  jogador.nome, magias.magia_nome, magias.id_magia from jogador 
 inner join magia_has_jogador on jogador.idjogador = magia_has_jogador.id_player
 inner join magias on magia_has_jogador.id_magia = magias.id_magia;
+*/
 
 #####verifica se o joador tem o iten e o exclui de positivo
 DROP PROCEDURE IF EXISTS VerificarIten;
@@ -122,13 +117,14 @@ where itens.item_nome = itenDC AND itens.id_player = id_JOG;
 
 if(contagem >0) then
 	delete from itens where itens.item_nome = itenDC AND itens.id_player = id_JOG LIMIT 1;
+    select 'Excluido com sucesso' as Msg;
 else select 'Impossivel excluir' as Msg;
 end if;
 
 END;
 $$ DELIMITER ;
 
-call VerificarIten(12, 'lanterna');
+call VerificarIten(1, 'lanterna');
 
 select * from itens;
 
@@ -138,16 +134,17 @@ DROP PROCEDURE IF EXISTS RestaurarStatus;
 DELIMITER $$
 CREATE PROCEDURE RestaurarStatus (id_JOG INT)
 BEGIN
- update jogador set energia_atual = energia_inicial where jogador.idjogador = id_JOG; 
- update jogador set habilidade_atual = habilidade_inicial where jogador.idjogador = id_JOG; 
- update jogador set sorte_atual = sorte_inicial where jogador.idjogador = id_JOG; 
+
+ update jogador set energia_atual = energia_inicial, habilidade_atual = habilidade_inicial, sorte_atual = sorte_inicial where jogador.idjogador = id_JOG; 
+
 END;
 $$ DELIMITER ;
 
-select  jogador.energia_inicial, jogador.energia_atual, jogador.habilidade_inicial, jogador.habilidade_atual, jogador.sorte_inicial, jogador.sorte_atual from jogador
-where jogador.idjogador = 1;
-
 call RestaurarStatus(1);
+
+select  * from jogador where jogador.idjogador = 1;
+
+
 ####################
 ####################
 ####################
@@ -401,7 +398,8 @@ select  jogador.idjogador, jogador.nome, magias.magia_nome, magias.id_magia from
 inner join magia_has_jogador on jogador.idjogador = magia_has_jogador.id_player
 inner join magias on magia_has_jogador.id_magia = magias.id_magia
 where jogador.idjogador = magia_has_jogador.id_player
-and magia_has_jogador.id_magia = magias.id_magia;
+and magia_has_jogador.id_magia = magias.id_magia
+order by jogador.nome, magias.magia_nome;
 
 select * from jogador__magia;
 select * from magia_has_jogador;
