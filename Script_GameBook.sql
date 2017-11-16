@@ -207,6 +207,20 @@ end if;
 
 END;
 $$ DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS AlterarPagina;
+DELIMITER $$
+CREATE PROCEDURE AlterarPagina (id_JOG INT, qtd int)
+BEGIN
+
+update jogador set jogador.pag_atual = qtd where jogador.idjogador = id_JOG;
+
+END;
+$$ DELIMITER ;
+
+call AlterarPagina(1, 87);
+select * from jogador;
 ####################
 ####################
 ####################
@@ -232,6 +246,81 @@ select VerificarHP(1);
 
 select * from jogador;
 
+drop function if exists BuscarHabilidade;
+DELIMITER $$
+CREATE FUNCTION BuscarHabilidade (cod_jog int)
+RETURNS integer
+BEGIN
+
+DECLARE hb integer;
+
+select jogador.habilidade_atual into hb from jogador where jogador.idjogador = cod_jog;
+
+return hb;
+END;
+$$ DELIMITER ;
+
+select BuscarHabilidade(1);
+
+select * from jogador;
+
+
+drop function if exists BuscarSorte;
+DELIMITER $$
+CREATE FUNCTION BuscarSorte (cod_jog int)
+RETURNS integer
+BEGIN
+
+DECLARE st integer;
+
+select jogador.sorte_atual into st from jogador where jogador.idjogador = cod_jog;
+
+return st;
+END;
+$$ DELIMITER ;
+
+select BuscarSorte(1);
+
+select * from jogador;
+
+
+drop function if exists BuscarPagina;
+DELIMITER $$
+CREATE FUNCTION BuscarPagina (cod_jog int)
+RETURNS integer
+BEGIN
+
+DECLARE pg integer;
+
+select jogador.pag_atual into pg from jogador where jogador.idjogador = cod_jog;
+
+return pg;
+END;
+$$ DELIMITER ;
+
+select BuscarPagina(1);
+
+select * from jogador;
+
+
+
+drop function if exists BuscarNome;
+DELIMITER $$
+CREATE FUNCTION BuscarNome (cod_jog int)
+RETURNS VARCHAR(45)
+BEGIN
+
+DECLARE nm VARCHAR(45);
+
+select jogador.nome into nm from jogador where jogador.idjogador = cod_jog;
+
+return nm;
+END;
+$$ DELIMITER ;
+
+select BuscarNome(1);
+
+select * from jogador;
 ####################
 #verifica se o jogador possui tal iten
 drop function if exists VerificarIten;
