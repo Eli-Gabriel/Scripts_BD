@@ -1,7 +1,6 @@
 drop database if exists gamebook;
 create database gamebook;
 use gamebook ;
-
 ####################TABELAS####################
 create table jogador(
 idjogador int not null primary key auto_increment,
