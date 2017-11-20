@@ -54,7 +54,6 @@ INSERT INTO magias (magia_nome, magia_desc) VALUES ("Fogo", "Todas as criaturas 
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Ouro dos Tolos", "Este encanto transformará pedra comum em uma pilha do que parece ser ouro. Contudo, o encanto é apenas uma forma de encanto da ilusão - embora mais confiável do que o Encanto da ilusão abaixo - e a pilha de ouro logo voltará a ser pedra.");
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Ilusão", "Este é um encanto poderoso, mas que não é muito confiável. Através deste encanto, você poderá criar uma ilusão convincente (por exemplo, que você se transformou em serpente, ou que o chão está coberto de carvão em brasa) para enganar uma criatura. O encanto ficará imediatamente sem efeito se acontecer qualquer coisa que desfaça a ilusão (por exemplo, você convence uma criatura que se transformou em uma serpente e então imediatamente atinge sua cabeça com um golpe de espada!). É eficiente sobre tudo com criaturas inteligentes.");
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Levitação", "Você pode lançar este encanto sobre objetos, adversários ou até sobre você mesmo. Livra quem o recebe dos efeitos da gravidade e assim fará com que tudo que esteja sob a sua influência flutue livremente no ar, sob o seu controle.");
-INSERT INTO magias (magia_nome, magia_desc) VALUES ("Sorte", "Este encanto, juntamente com os encantos de Habilidade e Energia, é especial porque pode ser lançado a qualquer momento durante a sua aventura, a não ser durante uma batalha. Você não precisa esperar que apareça a opção em uma página. Uma vez lançado, recuperará o seu índice de SORTE em metade de seu índice de SORTE Inicial (se a sua SORTE inicial for um número ímpar, subtraia o 1⁄2 de sobra). Este encanto nunca levará o seu índice de SORTE a um número superior a seu nível Inicial Portanto, se você lançar dois encantos da SORTE juntos, o seu índice de SORTE voltará apenas a ser igual a seu nível Inicial.");
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Escudo", "Ao lançar este encanto, você cria um escudo invisível à sua frente que o protegerá de objetos físicos, por exemplo flechas, espadas ou criaturas. O escudo não tem efeito contra a magia e, evidentemente, se nada fora dele pode tocar em você, você também não poderá tocar em nada fora dele.");
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Habilidade", "Este encanto restabelecerá o seu índice de HABILIDADE, aumentando-o em metade de seu valor Inicial, e pode ser lançado a qualquer momento durante a sua aventura, a não ser em uma batalha. Para conhecer todas as regras, veja o Encanto da Sorte acima. O Encanto da Habilidade funciona exatamente da mesma maneira.");
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Energia", "Este encanto recuperará o seu índice de Energia, aumentando-o em metade de seu valor Inicial, e pode ser lançado a qualquer momento durante a sua aventura. Veja o Encanto da Sorte para conhecer as regras completas.");
@@ -160,7 +159,7 @@ where jogador.idjogador = id_JOG;
 
 if (hp+qtd < hp_inicial ) then
  update jogador set jogador.energia_atual = jogador.energia_atual + qtd;
-else update jogador set jogador.energia_atual = jogador.energia_inicial;
+else update jogador set jogador.energia_atual = jogador.energia_inicial where jogador.idjogador = id_JOG;
 end if; 
 
 END;
@@ -179,7 +178,7 @@ where jogador.idjogador = id_JOG;
 
 if (hp+qtd < hab_inicial ) then
  update jogador set jogador.habilidade_atual = jogador.habilidade_atual + qtd;
-else update jogador set jogador.habilidade_atual = jogador.habilidade_inicial;
+else update jogador set jogador.habilidade_atual = jogador.habilidade_inicial where jogador.idjogador = id_JOG;
 end if; 
 
 END;
@@ -198,7 +197,7 @@ where jogador.idjogador = id_JOG;
 
 if (sorte+qtd < sorte_inicial ) then
  update jogador set jogador.sorte_atual = jogador.sorte_atual + qtd;
-else update jogador set jogador.sorte_atual = jogador.sorte_inicial;
+else update jogador set jogador.sorte_atual = jogador.sorte_inicial where jogador.idjogador = id_JOG;
 end if; 
 
 END;
@@ -217,6 +216,46 @@ $$ DELIMITER ;
 
 call AlterarPagina(1, 87);
 select * from jogador;
+
+
+
+DROP PROCEDURE IF EXISTS AlterarOuro;
+DELIMITER $$
+CREATE PROCEDURE AlterarOuro (id_JOG INT, qtd int)
+BEGIN
+
+declare ouroatual int;
+
+select  jogador.ouro INTO ouroatual from jogador
+where jogador.idjogador = id_JOG;
+
+if(ouroatual + qtd > 0) then
+	update jogador set jogador.ouro = jogador.ouro + qtd where jogador.idjogador = id_JOG;
+else select 'Ouro Insuficiente' as Msg;
+end if;
+ 
+END;
+$$ DELIMITER ;
+
+call AlterarOuro(1, -94);
+select * from jogador;
+
+
+DROP PROCEDURE IF EXISTS InserirMagia;
+DELIMITER $$
+CREATE PROCEDURE InserirMagia (idmg int)
+BEGIN
+
+declare id_jog int;
+select max(jogador.idjogador) into id_jog from jogador;
+
+insert into magia_has_jogador(id_player, id_magia) values (id_jog, idmg);
+ 
+END;
+$$ DELIMITER ;
+
+call InserirMagia(1);
+select * from magia_has_jogador;
 ####################
 ####################
 ####################
@@ -239,8 +278,9 @@ END;
 $$ DELIMITER ;
 
 select VerificarHP(1);
-
 select * from jogador;
+
+
 
 drop function if exists BuscarHabilidade;
 DELIMITER $$
@@ -257,8 +297,8 @@ END;
 $$ DELIMITER ;
 
 select BuscarHabilidade(1);
-
 select * from jogador;
+
 
 
 drop function if exists BuscarSorte;
@@ -276,8 +316,8 @@ END;
 $$ DELIMITER ;
 
 select BuscarSorte(1);
-
 select * from jogador;
+
 
 
 drop function if exists BuscarPagina;
@@ -295,7 +335,6 @@ END;
 $$ DELIMITER ;
 
 select BuscarPagina(1);
-
 select * from jogador;
 
 
@@ -315,9 +354,55 @@ END;
 $$ DELIMITER ;
 
 select BuscarNome(1);
-
 select * from jogador;
-####################
+
+
+
+
+drop function if exists VerificarOuro;
+DELIMITER $$
+CREATE FUNCTION VerificarOuro (id_JOG INT, qtd int)
+RETURNS boolean
+BEGIN
+
+declare ouroatual int;
+
+select  jogador.ouro INTO ouroatual from jogador
+where jogador.idjogador = id_JOG;
+
+if(ouroatual - qtd >= 0) then
+	return true;
+else return false;
+end if;
+
+END;
+$$ DELIMITER ;
+
+select VerificarOuro(1, 150);
+select * from jogador;
+
+
+drop function if exists BuscarUltimoID;
+DELIMITER $$
+CREATE FUNCTION BuscarUltimoID ()
+RETURNS int
+BEGIN
+
+DECLARE nm int;
+
+select max(jogador.idjogador) into nm from jogador limit 1;
+
+return nm;
+END;
+$$ DELIMITER ;
+
+select BuscarUltimoID();
+select * from jogador;
+
+############################################################
+############################################################
+############################################################
+############################################################
 #verifica se o jogador possui tal iten
 drop function if exists VerificarIten;
 DELIMITER $$
@@ -346,12 +431,6 @@ select * from itens;
 
 
 
-
-
-
-
-
-
 #verifica se o jogador possui tal magia
 drop function if exists VerificarMagia
 DELIMITER $$
@@ -373,7 +452,6 @@ END;
 $$ DELIMITER ;
 
 select * from magia_has_jogador;
-
 select VerificarMagia(1, 3);
 
 
@@ -402,7 +480,17 @@ order by jogador.nome, magias.magia_nome;
 
 select * from jogador__magia;
 select * from magia_has_jogador;
+select * from magias;
 
+
+drop view if exists Jogador__Item;
+create view Jogador__Item as 
+select  jogador.idjogador, jogador.nome, itens.item_nome, itens.item_id from jogador 
+inner join itens on jogador.idjogador = itens.id_player
+where jogador.idjogador = itens.id_player
+order by jogador.nome, itens.item_nome;
+
+select * from Jogador__Item;
 ###################################################################################################
 ####################################################################################################
 ####################################################################################################
