@@ -20,6 +20,7 @@ create table itens (
 item_id int not null primary key auto_increment,
 item_nome varchar(50),
 item_desc varchar(100),
+usado boolean,
 id_player int not null,
 Foreign Key (id_player) REFERENCES jogador(idjogador)
 );
@@ -32,17 +33,34 @@ magia_desc varchar(750)
 
 create table magia_has_jogador(
 id int not null primary key auto_increment,
+usada boolean,
 id_player int not null,
 id_magia int not null,
 Foreign Key (id_player) REFERENCES jogador(idjogador),
 Foreign Key (id_magia) REFERENCES magias(id_magia)
 );
 
+create table paginas_passadas(
+id_pg INT NOT NULL PRIMARY KEY,
+num_pg INT NOT NULL,
+id_jogador INT NOT NULL,
+FOREIGN KEY (id_jogador) REFERENCES jogador(idjogador)
+);
+
+create table batalhas(
+id_bat INT NOT NULL PRIMARY KEY,
+foe_bat VARCHAR(45),
+stt_bat VARCHAR(3),
+id_jogador INT NOT NULL,
+FOREIGN KEY (id_jogador) REFERENCES jogador(idjogador)
+);
+
+#/*
 select * from jogador;
 select * from itens;
 select * from magias;
 select * from magia_has_jogador;
-
+#*/
 
 ####################INSERTS#########################
 INSERT INTO `gamebook`.`jogador` (`nome`, `energia_inicial`, `energia_atual`, `habilidade_inicial`, `habilidade_atual`, `sorte_inicial`, `sorte_atual`, `magia_inicial`) VALUES ('srtg', '52', '52', '15', '15', '89', '89', '99999');
@@ -54,9 +72,10 @@ INSERT INTO magias (magia_nome, magia_desc) VALUES ("Fogo", "Todas as criaturas 
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Ouro dos Tolos", "Este encanto transformará pedra comum em uma pilha do que parece ser ouro. Contudo, o encanto é apenas uma forma de encanto da ilusão - embora mais confiável do que o Encanto da ilusão abaixo - e a pilha de ouro logo voltará a ser pedra.");
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Ilusão", "Este é um encanto poderoso, mas que não é muito confiável. Através deste encanto, você poderá criar uma ilusão convincente (por exemplo, que você se transformou em serpente, ou que o chão está coberto de carvão em brasa) para enganar uma criatura. O encanto ficará imediatamente sem efeito se acontecer qualquer coisa que desfaça a ilusão (por exemplo, você convence uma criatura que se transformou em uma serpente e então imediatamente atinge sua cabeça com um golpe de espada!). É eficiente sobre tudo com criaturas inteligentes.");
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Levitação", "Você pode lançar este encanto sobre objetos, adversários ou até sobre você mesmo. Livra quem o recebe dos efeitos da gravidade e assim fará com que tudo que esteja sob a sua influência flutue livremente no ar, sob o seu controle.");
+INSERT INTO magias (magia_nome, magia_desc) VALUES ("Sorte", "Este encanto, juntamente com os encantos de Habilidade e Energia, é especial porque pode ser lançado a qualquer momento durante a sua aventura, a não ser durante uma batalha. Você não precisa esperar que apareça a opção em uma página. Uma vez lançado, recuperará o seu índice de SORTE em metade de seu índice de SORTE Inicial (se a sua SORTE inicial for um número ímpar, subtraia o 1⁄2 de sobra). Este encanto nunca levará o seu índice de SORTE a um número superior a seu nível Inicial Portanto, se você lançar dois encantos da SORTE juntos, o seu índice de SORTE voltará apenas a ser igual a seu nível Inicial.");
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Escudo", "Ao lançar este encanto, você cria um escudo invisível à sua frente que o protegerá de objetos físicos, por exemplo flechas, espadas ou criaturas. O escudo não tem efeito contra a magia e, evidentemente, se nada fora dele pode tocar em você, você também não poderá tocar em nada fora dele.");
-INSERT INTO magias (magia_nome, magia_desc) VALUES ("Habilidade", "Este encanto restabelecerá o seu índice de HABILIDADE, aumentando-o em metade de seu valor Inicial, e pode ser lançado a qualquer momento durante a sua aventura, a não ser em uma batalha. Para conhecer todas as regras, veja o Encanto da Sorte acima. O Encanto da Habilidade funciona exatamente da mesma maneira.");
-INSERT INTO magias (magia_nome, magia_desc) VALUES ("Energia", "Este encanto recuperará o seu índice de Energia, aumentando-o em metade de seu valor Inicial, e pode ser lançado a qualquer momento durante a sua aventura. Veja o Encanto da Sorte para conhecer as regras completas.");
+INSERT INTO magias (magia_nome, magia_desc) VALUES ("Habilidade", "Este encanto restabelecerá o seu índice de HABILIDADE, aumentando-o em metade de seu valor Inicial, e pode ser lançado a qualquer momento durante a sua aventura, a não ser em uma batalha. Funciona da mesma maneira que o Encanto da Sorte. O Encanto da Habilidade funciona exatamente da mesma maneira.");
+INSERT INTO magias (magia_nome, magia_desc) VALUES ("Energia", "Este encanto recuperará o seu índice de Energia, aumentando-o em metade de seu valor Inicial, e pode ser lançado a qualquer momento durante a sua aventura.");
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Força", "Este encanto tem o efeito de aumentar muito a sua força, e é muito útil quando se luta contra criaturas fortes. Porem, deve ser utilizado com cautela, já que é difícil controlar a sua própria força quando ela aumenta demais!");
 INSERT INTO magias (magia_nome, magia_desc) VALUES ("Fraqueza", "Criaturas fortes são reduzidas por este encanto a miseráveis fracotes. Não tem efeito contra todas as criaturas, mas, quando tem efeito, a criatura se torna frágil e muito menos perigosa em uma batalha.");
 
@@ -64,7 +83,7 @@ INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('1', '3');
 INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('1', '7');
 INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('1', '7');
 INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('1', '8');
-INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('1', '10');
+INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('1', '9');
 INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('2', '4');
 INSERT INTO `magia_has_jogador` (`id_player`, `id_magia`) VALUES ('2', '7');
 
@@ -478,9 +497,8 @@ where jogador.idjogador = magia_has_jogador.id_player
 and magia_has_jogador.id_magia = magias.id_magia
 order by jogador.nome, magias.magia_nome;
 
-select * from jogador__magia;
-select * from magia_has_jogador;
-select * from magias;
+select * from Jogador__Magia;
+
 
 
 drop view if exists Jogador__Item;
@@ -490,27 +508,16 @@ inner join itens on jogador.idjogador = itens.id_player
 where jogador.idjogador = itens.id_player
 order by jogador.nome, itens.item_nome;
 
-select * from Jogador__Item;
-###################################################################################################
-####################################################################################################
-####################################################################################################
-####################################################################################################
-####################################################################################################
-####################################################################################################
-####################################################################################################
-####################################################################################################
-####################################################################################################
-####################################################################################################
-####################################################################################################
-####################################################################################################
-####################################################################################################
-####################################################################################################
-####################################################################################################
-####################################################################################################
-####################################################################################################
-####################################################################################################
-####################################################################################################
-####################################################################################################
+
+
+drop view if exists pg_ps;
+create view pg_ps as 
+select jogador.nome, paginas_passadas.num_pg from jogador
+INNER JOIN paginas_passadas ON jogador.idjogador = paginas_passadas.id_jogador
+where jogador.idjogador = paginas_passadas.id_jogador
+order by jogador.nome, paginas_passadas.num_pg;
+
+select * from pg_ps;
 ####################################################################################################
 ####################################################################################################
 ####################################################################################################
