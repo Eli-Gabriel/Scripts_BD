@@ -47,10 +47,11 @@ id_jogador INT NOT NULL,
 FOREIGN KEY (id_jogador) REFERENCES jogador(idjogador)
 );
 
+#batalhas travadas e seus resultados
 create table batalhas(
 id_bat INT NOT NULL PRIMARY KEY,
 foe_bat VARCHAR(45),
-stt_bat VARCHAR(3),
+stt_bat VARCHAR(3),##status da batalha (vencida, perdida, fuga).
 id_jogador INT NOT NULL,
 FOREIGN KEY (id_jogador) REFERENCES jogador(idjogador)
 );
@@ -62,7 +63,7 @@ select * from magias;
 select * from magia_has_jogador;
 #*/
 
-####################INSERTS#########################
+####################INSERTS####BÁSICOS/NECESSÁRIOS#########################
 INSERT INTO `gamebook`.`jogador` (`nome`, `energia_inicial`, `energia_atual`, `habilidade_inicial`, `habilidade_atual`, `sorte_inicial`, `sorte_atual`, `magia_inicial`) VALUES ('srtg', '52', '52', '15', '15', '89', '89', '99999');
 INSERT INTO `gamebook`.`jogador` (`nome`, `energia_inicial`, `energia_atual`, `habilidade_inicial`, `habilidade_atual`, `sorte_inicial`, `sorte_atual`, `magia_inicial`) VALUES ('cxv', '45', '45', '32', '32', '48', '48', '52');
 
@@ -114,12 +115,6 @@ $$ DELIMITER ;
 
 call VerificarMagia(2,4);
 select * from magia_has_jogador;
-
-/*
-select  jogador.nome, magias.magia_nome, magias.id_magia from jogador 
-inner join magia_has_jogador on jogador.idjogador = magia_has_jogador.id_player
-inner join magias on magia_has_jogador.id_magia = magias.id_magia;
-*/
 
 #####verifica se o joador tem o iten e o exclui de positivo
 DROP PROCEDURE IF EXISTS VerificarIten;
@@ -256,8 +251,8 @@ end if;
 END;
 $$ DELIMITER ;
 
-call AlterarOuro(1, -94);
-select * from jogador;
+#call AlterarOuro(1, -94);
+#select * from jogador;
 
 
 DROP PROCEDURE IF EXISTS InserirMagia;
@@ -273,12 +268,27 @@ insert into magia_has_jogador(id_player, id_magia) values (id_jog, idmg);
 END;
 $$ DELIMITER ;
 
-call InserirMagia(1);
-select * from magia_has_jogador;
-####################
-####################
-####################
 
+
+DROP PROCEDURE IF EXISTS MagiaUncia;
+DELIMITER $$
+CREATE PROCEDURE MagiaUncia(cod_jog int, magiaCOD int)
+BEGIN
+
+if(magiaCOD = 1) then
+	UPDATE jogador set habilidade_atual = habilidade_atual + (habilidade_inicial/2);
+end if;
+
+if(magiaCOD = 2) then
+	UPDATE jogador set energia_atual = energia_atual + (energia_inicial/2);
+end if;
+
+if(magiaCOD = 3) then
+	UPDATE jogador set sorte_atual = sorte_atual + (sorte_inicial/2);
+end if;
+
+END;
+$$ DELIMITER ;
 
 ####################FUNÇÕES####################
 #vertifica a vitalidade do jogador
@@ -470,9 +480,6 @@ end if;
 END;
 $$ DELIMITER ;
 
-select * from magia_has_jogador;
-select VerificarMagia(1, 3);
-
 
 ####################TRIGGERS####################
 drop trigger if exists itenInsert;
@@ -487,7 +494,9 @@ insert into itens (item_nome, id_player) values('Espada', new.idjogador);
 END; 
 $$ DELIMITER ;
 
+
 ####################VIEWS####################
+#view com a relação do jogador e as suas magias
 drop view if exists Jogador__Magia;
 create view Jogador__Magia as 
 select  jogador.idjogador, jogador.nome, magias.magia_nome, magias.id_magia from jogador 
@@ -500,7 +509,7 @@ order by jogador.nome, magias.magia_nome;
 select * from Jogador__Magia;
 
 
-
+#view com a relação do jogador e os items que ele possui
 drop view if exists Jogador__Item;
 create view Jogador__Item as 
 select  jogador.idjogador, jogador.nome, itens.item_nome, itens.item_id from jogador 
@@ -509,7 +518,7 @@ where jogador.idjogador = itens.id_player
 order by jogador.nome, itens.item_nome;
 
 
-
+#view com a relação do jogador e as paginas que ele passou
 drop view if exists pg_ps;
 create view pg_ps as 
 select jogador.nome, paginas_passadas.num_pg from jogador

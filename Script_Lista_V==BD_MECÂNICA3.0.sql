@@ -1450,18 +1450,4 @@ BEGIN
 update caixa set valordébitos_caixa = valordébitos_caixa + new.valor_pag 
 where caixa.cod_caixa = new.cod_caixa;
 END; 
-$$ DELIMITER ;
-
-
-
-/*
-MODELO
-drop trigger if exists Questao5XXX
-DELIMITER $$ 
-CREATE TRIGGER Questao5XXX AFTER XXXXX
-ON XXXXX FOR EACH ROW
-BEGIN
-#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx;
-END; 
-$$ DELIMITER ;
-*/
+$$ DELIMITER ;s
