@@ -49,9 +49,9 @@ FOREIGN KEY (id_jogador) REFERENCES jogador(idjogador)
 
 #batalhas travadas e seus resultados
 create table batalhas(
-id_bat INT NOT NULL PRIMARY KEY,
+id_bat INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
 foe_bat VARCHAR(45),
-stt_bat VARCHAR(3),##status da batalha (vencida, perdida, fuga).
+stt_bat VARCHAR(45),##status da batalha (vencida, perdida, fuga).
 id_jogador INT NOT NULL,
 FOREIGN KEY (id_jogador) REFERENCES jogador(idjogador)
 );
@@ -61,6 +61,7 @@ select * from jogador;
 select * from itens;
 select * from magias;
 select * from magia_has_jogador;
+select * from batalhas;
 #*/
 
 ####################INSERTS####BÁSICOS/NECESSÁRIOS#########################
