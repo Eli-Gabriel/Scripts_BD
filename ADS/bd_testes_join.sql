@@ -33,13 +33,22 @@ inner join formado on medico.id_medico = formado.id_medico
 inner join especialidade on formado.id_especialidade = especialidade.id_especialidade
 where especialidade.nome = 'Imunologia';
 --*/
---6/*6 - descubra se há no sistema médicos que não tenham nenhuma formação cadastrada;
-
+--6
+/*6 - descubra se há no sistema médicos que não tenham nenhuma formação cadastrada;
+select medico.nome from medico
+except
+select medico.nome from medico
+inner join formado on medico.id_medico = formado.id_medico;
 --*/
---7/*7 - selecione o nome dos pacientes que nunca participaram de uma consulta;
-
+--7
+/*7 - selecione o nome dos pacientes que nunca participaram de uma consulta;
+select paciente.nome from paciente
+except
+select paciente.nome from paciente 
+inner join consulta on paciente.id_paciente = consulta.id_paciente;
 --*/
---8/*8 - selecione o nome de todos os remédios prescritos para um determinado paciente;
+--8
+/*8 - selecione o nome de todos os remédios prescritos para um determinado paciente;
 select remedio.nome from remedio
 inner join prescreve on remedio.id_remedio = prescreve.id_remedio
 inner join consulta on  prescreve.id_consulta = consulta.id_consulta
