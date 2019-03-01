@@ -53,5 +53,6 @@ select remedio.nome from remedio
 inner join prescreve on remedio.id_remedio = prescreve.id_remedio
 inner join consulta on  prescreve.id_consulta = consulta.id_consulta
 inner join paciente on consulta.id_paciente = paciente.id_paciente
+where paciente.id_paciente = 6
 group by remedio.nome
 --*/
