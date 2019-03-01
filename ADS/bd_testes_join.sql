@@ -6,7 +6,8 @@ where remedio.id_laboratorio = laboratorio.id_laboratorio;
 --2 
 /* 2 - Selecione o nome do paciente e do médico das consultas realizadas anteriormente a 1998;
 select paciente.nome as "paciente", medico.nome as "medico", consulta.data 
-from paciente inner join consulta on paciente.id_paciente = consulta.id_paciente
+from paciente 
+inner join consulta on paciente.id_paciente = consulta.id_paciente
 inner join medico on consulta.id_medico = medico.id_medico
 where consulta.data < '01-01-1998' 
 order by consulta.data 
@@ -47,8 +48,7 @@ except
 select paciente.nome from paciente 
 inner join consulta on paciente.id_paciente = consulta.id_paciente;
 --*/
---8
-/*8 - selecione o nome de todos os remédios prescritos para um determinado paciente;
+--8 /*8 - selecione o nome de todos os remédios prescritos para um determinado paciente;
 select remedio.nome from remedio
 inner join prescreve on remedio.id_remedio = prescreve.id_remedio
 inner join consulta on  prescreve.id_consulta = consulta.id_consulta
