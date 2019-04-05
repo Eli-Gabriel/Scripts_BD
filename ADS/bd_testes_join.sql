@@ -42,7 +42,7 @@ select medico.nome from medico
 inner join formado on medico.id_medico = formado.id_medico;
 --*/
 --7
-/*7 - selecione o nome dos pacientes que nunca participaram de uma consulta
+ /*7 - selecione o nome dos pacientes que nunca participaram de uma consulta
 select paciente.nome from paciente
 except
 select paciente.nome from paciente 
@@ -56,4 +56,26 @@ inner join consulta on  prescreve.id_consulta = consulta.id_consulta
 inner join paciente on consulta.id_paciente = paciente.id_paciente
 where paciente.id_paciente = 6
 group by remedio.nome
+--*/
+--9 
+/*9 - selecione as consultas que não tiveram prescrição de remédios;
+select * from  consulta left join prescreve
+on consulta.id_consulta = prescreve.id_consulta
+where prescreve.id_consulta is null
+--select * from prescreve order by id_consulta;
+--*/
+--10 
+/*10 - descubra se no sistema existem remédios que nunca participaram de uma prescrição;
+select * from  remedio left join prescreve
+on remedio.id_remedio = prescreve.id_remedio
+where remedio.id_remedio is null;--Não existem remedios não prescritos
+--select * from prescreve order by id_remedio;
+--*/
+--11 
+/*11 - selecione o nome de todos pacientes que um determinado remédio foi prescrito para o mesmo e a data desta prescrição;
+select paciente.nome, consulta.data, remedio.nome from paciente
+inner join consulta on paciente.id_paciente = consulta.id_paciente
+inner join prescreve on consulta.id_consulta = prescreve.id_consulta
+inner join remedio on prescreve.id_remedio = remedio.id_remedio
+where remedio.nome = 'FEMINA';
 --*/
