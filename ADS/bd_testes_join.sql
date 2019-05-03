@@ -42,7 +42,7 @@ select medico.nome from medico
 inner join formado on medico.id_medico = formado.id_medico;
 --*/
 --7
- /*7 - selecione o nome dos pacientes que nunca participaram de uma consulta
+/*7 - selecione o nome dos pacientes que nunca participaram de uma consulta
 select paciente.nome from paciente
 except
 select paciente.nome from paciente 
