@@ -1,4 +1,4 @@
-﻿--1 
+--1 
 /*- A média de peso dos pacientes do sexo masculino, alcoolatras;
 select avg(peso) from paciente
 where sexo = 'M' and alcoolatra;
@@ -42,17 +42,30 @@ select avg(peso) from paciente
 where  data_nascimento between '01-01-1984' and '01-01-1989';
 --*/
 
---8 /*- selecione o nome e a quantidade de consultas realizadas por 
+--8 DPSDPSDPSDPSDPSDPSDPSDPSDPS
+/*- selecione o nome e a quantidade de consultas realizadas por 
 --cada paciente para pacientes que tenham mais de 4 consultas e sejam 
 --do sexo feminino. Ordene seu select pelo número de consultas de forma crescente;
-
+select paciente.nome, count(consulta.id_consulta) as qtd
+from paciente
+join consulta on paciente.id_paciente = consulta.id_paciente
+where paciente.sexo = 'F' 
+group by paciente.nome 
 --*/
 
---9 /*- faça uma consulta que mostre os pacientes que ganham próximo da média 
+--9 DPSDPSDPSDPSDPSDPSDPSDPSDPS
+/*- faça uma consulta que mostre os pacientes que ganham próximo da média 
 --de rendimento geral dos pacientes (um intervalo de 10% a mais e a menos);
+select nome,  avg(rendimento) as media
+from paciente where rendimento between (media*1.1) and (media*0.9)
+
 --*/
 
 --10 /*- Selecione o nome do paciente que mais participou de consultas.
+select paciente.nome, max((select count(consulta.id_paciente from consulta)))
+from paciente 
+join consulta on paciente.id_paciente = consulta.id_paciente
+
 --*/
 
 --11 /*- Selecione o mais novo dentre os pacientes consultados com o médico de id 6;
