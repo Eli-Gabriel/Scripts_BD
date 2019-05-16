@@ -1,4 +1,4 @@
-﻿--1 
+--1 
 /*- A média de peso dos pacientes do sexo masculino, alcoolatras;
 select avg(peso) from paciente
 where sexo = 'M' and alcoolatra;
@@ -70,7 +70,7 @@ where rendimento::numeric between
 (select avg(rendimento::numeric) from paciente)*1.1
 --*/
 
---10 
+--10 DPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPS
 /*- Selecione o nome do paciente que mais participou de consultas.
 select paciente.nome, count(consulta.id_paciente)
 from paciente 
@@ -79,7 +79,7 @@ join consulta on paciente.id_paciente = consulta.id_paciente
 group by paciente.nome
 --*/
 
---11 
+--11 DPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPS
 /*- Selecione o mais novo dentre os pacientes consultados com o médico de id 6
 select paciente.nome, max(paciente.data_nascimento)
 from paciente
