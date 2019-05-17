@@ -1,4 +1,4 @@
---1 
+﻿--1 
 /*- A média de peso dos pacientes do sexo masculino, alcoolatras;
 select avg(peso) from paciente
 where sexo = 'M' and alcoolatra;
@@ -40,11 +40,11 @@ group by tipo_sanguineo
 having count(tipo_sanguineo) > 60
 --*/
 
---7 DPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPS
+--7 fodaseessamerdaDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPS
 /*- Selecione a média de peso dos pacientes que possuem entre 30 e 35 anos;
-select avg(peso), (EXTRACT(YEAR FROM NOW()) - EXTRACT(YEAR FROM data_nascimento)) AS idade
+select avg(peso), AGE(data_nascimento)
 from paciente
-having idade between 30 and 35
+having age(data_nascimento) between 30 and 35
 --*/
 
 --8 
@@ -72,18 +72,27 @@ where rendimento::numeric between
 
 --10 DPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPS
 /*- Selecione o nome do paciente que mais participou de consultas.
-select paciente.nome, count(consulta.id_paciente)
+select paciente.nome, max(select count(consulta.id_paciente) from consulta group by id_paciente)
 from paciente 
 join consulta on paciente.id_paciente = consulta.id_paciente
-
 group by paciente.nome
 --*/
 
+--select max(data_nascimento) from paciente
+--select * from consulta where id_medico = 6
 --11 DPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPS
-/*- Selecione o mais novo dentre os pacientes consultados com o médico de id 6
-select paciente.nome, max(paciente.data_nascimento)
+--/*- Selecione o mais novo dentre os pacientes consultados com o médico de id 6
+select paciente.nome, age(paciente.data_nascimento)
 from paciente
 join consulta on paciente.id_paciente = consulta.id_paciente
-where consulta.id_medico = 6
-group by paciente.nome --limit 1
+where consulta.id_medico = 6 and
+age(paciente.data_nascimento) = (select min(age(paciente.data_nascimento)) from paciente)
 --*/
+
+
+
+
+
+
+
+
