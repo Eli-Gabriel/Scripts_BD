@@ -40,11 +40,11 @@ group by tipo_sanguineo
 having count(tipo_sanguineo) > 60
 --*/
 
---7 fodaseessamerdaDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPS
+--7 
 /*- Selecione a média de peso dos pacientes que possuem entre 30 e 35 anos;
-select avg(peso), AGE(data_nascimento)
+select avg(peso)
 from paciente
-having age(data_nascimento) between 30 and 35
+where (extract(year from age(data_nascimento))between 30 and 35)
 --*/
 
 --8 
@@ -72,21 +72,19 @@ where rendimento::numeric between
 
 --10 DPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPS
 /*- Selecione o nome do paciente que mais participou de consultas.
-select paciente.nome, max(select count(consulta.id_paciente) from consulta group by id_paciente)
+select paciente.nome
 from paciente 
 join consulta on paciente.id_paciente = consulta.id_paciente
-group by paciente.nome
+having count(consulta.id_paciente) = (max(select count(consulta.id_paciente) from consulta group by id_paciente))
 --*/
 
---select max(data_nascimento) from paciente
---select * from consulta where id_medico = 6
---11 DPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPSDPS
---/*- Selecione o mais novo dentre os pacientes consultados com o médico de id 6
-select paciente.nome, age(paciente.data_nascimento)
-from paciente
+--11 
+/*- Selecione o mais novo dentre os pacientes consultados com o médico de id 6
+select * from paciente 
+where data_nascimento = 
+(select max(paciente.data_nascimento) from paciente 
 join consulta on paciente.id_paciente = consulta.id_paciente
-where consulta.id_medico = 6 and
-age(paciente.data_nascimento) = (select min(age(paciente.data_nascimento)) from paciente)
+where consulta.id_medico = 6)
 --*/
 
 
