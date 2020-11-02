@@ -434,7 +434,6 @@ insert into Pagamentos values (null, '2020-09-01', 100.90, 'Débito Conta', 6, n
 
 #FAÇA AQUI OS EXERCÍCIOS 
 /*
-Utilize os conceitos aprendidos na Aula 01 e 02 da Disciplina 04 sobre a seleção de registros em banco de dados e faça os exercícios a seguir no banco de dados da BD_Mecânica 5.0
 
 Você deverá utilizar o SCRIPT SQL em anexo a esta atividade. Abra o script no seu MySQL Workbench, execute o mesmo para criar o banco de dados 
 e faça os comandos SELECT solicitados para resolver os problemas nos locais indicados. 
@@ -442,16 +441,16 @@ Lembre-se que você deve escrever os comandos SQL da lista de exercício no mesm
 
 Lista de Exercício:
 
-Selecione o código, nome, cpf, nome do Sexo, dados do Endereço, nome da Cidade e nome do Estado dos Clientes.
-Selecione o código, nome, cpf, função, nome do Sexo, dados do Endereço, nome da Cidade, nome do Estado e nome do Departamento dos Funcionários.
-Selecione o nome do Cliente e os dados dos seus Carros.
-Selecione código e data da Compra, nome do Fornecedor e os nomes, quantidade e valor dos Produtos comprados.
-Selecione o código e data da Venda, nome do Cliente e os nomes, quantidade e valor dos Produtos vendidos.
-Selecione o código, a data, o valor e a forma de pagamento dos Pagamentos, o código e data do Caixa, o nome do Funcionário e a descrição, data de vencimento e o valor da Despesa.
-Selecione o código e o nome do Fornecedor, assim como a quantidade e a soma do valor total das Compras que ele participou. Dica: Use subconsulta com funções.
-Secione o código e nome do Cliente, assim como o valor médio e a soma do valor total das Vendas que ele participou. Dica: Use subconsulta com funções.
-Selecione o código, a data e a forma de pagamento da Venda, o nome do Cliente, assim como a quantidade e a soma do valor total dos Itens Vendidos em cada Venda.  Dica: Use subconsulta com funções.
-Selecione o nome do Funcionário, assim como a quantidade e a soma do valor total das Vendas realizadas por cada vendedor. Dica: Use subconsulta com funções.
+V 1 - Selecione o código, nome, cpf, nome do Sexo, dados do Endereço, nome da Cidade e nome do Estado dos Clientes.
+V 2 - Selecione o código, nome, cpf, função, nome do Sexo, dados do Endereço, nome da Cidade, nome do Estado e nome do Departamento dos Funcionários.
+V 3 - Selecione o nome do Cliente e os dados dos seus Carros.
+V 4 - Selecione código e data da Compra, nome do Fornecedor e os nomes, quantidade e valor dos Produtos comprados.
+V 5 - Selecione o código e data da Venda, nome do Cliente e os nomes, quantidade e valor dos Produtos vendidos.
+DPS 6 - Selecione o código, a data, o valor e a forma de pagamento dos Pagamentos, o código e data do Caixa, o nome do Funcionário e a descrição, data de vencimento e o valor da Despesa.
+V 7 - Selecione o código e o nome do Fornecedor, assim como a quantidade e a soma do valor total das Compras que ele participou. Dica: Use subconsulta com funções.
+V 8 - Secione o código e nome do Cliente, assim como o valor médio e a soma do valor total das Vendas que ele participou. Dica: Use subconsulta com funções.
+DPS 9 - Selecione o código, a data e a forma de pagamento da Venda, o nome do Cliente, assim como a quantidade e a soma do valor total dos Itens Vendidos em cada Venda.  Dica: Use subconsulta com funções.
+10 - Selecione o nome do Funcionário, assim como a quantidade e a soma do valor total das Vendas realizadas por cada vendedor. Dica: Use subconsulta com funções.
 
 Observações Importante:
 
@@ -464,13 +463,89 @@ Observações Importante:
 - O script deve ser criado para executar de uma só vez, ou seja, sem erros e na sequencia de criação de tabelas correta;
 
 */
+
 #exercicio01
+select cliente.cod_cli as 'Código', cliente.nome_cli as 'Nome', cliente.cpf_cli as 'CPF', sexo.nome_sex as 'Sexo', 
+endereco.rua_end as 'Rua', endereco.numero_end as 'Número', endereco.bairro_end as 'Bairro', cidade.nome_cid as 'Cidade', 
+estado.nome_est as 'Estado'
+from sexo
+join cliente on sexo.cod_sex = cliente.cod_sex_fk
+join endereco on cliente.cod_end_fk = endereco.cod_end
+join cidade on endereco.cod_cid_fk = cidade.cod_cid
+join estado on cidade.cod_est_fk = estado.cod_est;
+
 #exercicio02
+select funcionario.cod_func as 'Código', funcionario.nome_func as 'Nome', funcionario.cpf_func as 'CPF', sexo.nome_sex as 'Sexo', 
+endereco.rua_end as 'Rua', endereco.numero_end as 'Número', endereco.bairro_end as 'Bairro', cidade.nome_cid as 'Cidade', 
+estado.nome_est as 'Estado', departamento.nome_dep as 'Departamento'
+from sexo
+join funcionario on sexo.cod_sex = funcionario.cod_sex_fk
+join endereco on funcionario.cod_end_fk = endereco.cod_end
+join cidade on endereco.cod_cid_fk = cidade.cod_cid
+join estado on cidade.cod_est_fk = estado.cod_est
+join departamento on departamento.cod_dep = funcionario.cod_dep_fk;
+
 #exercicio03
+select cliente.nome_cli as 'Nome Cliente', carro.cod_car as 'Código Carro', carro.modelo_car as 'Modelo', carro.cor_car as 'Cor', 
+carro.portas_car as 'Portas', carro.placa_car as 'Placa', carro.marcar_car as 'Marca'
+from cliente
+join carro on cliente.cod_cli = carro.cod_cli_fk ORDER BY cliente.nome_cli;
+
 #exercicio04
+select compra.cod_comp as 'Código', compra.data_comp as 'Data', fornecedor.razãosocial_forn as 'Fornecedor', 
+produto.descrição_prod as 'Produto', itens_compra.quant_itenc as 'Quantidade', produto.valor_prod as 'Valor'
+from fornecedor 
+join compra on fornecedor.cod_forn = compra.cod_forn_fk
+join itens_compra on compra.cod_comp = itens_compra.cod_comp_fk
+join produto on itens_compra.cod_prod_fk = produto.cod_prod;
+
 #exercicio05
-#exercicio06
+select venda.cod_vend as 'Código', venda.data_vend as 'Data', cliente.nome_cli as 'Cliente', 
+produto.descrição_prod as 'Produto', itens_venda.quant_itenv as 'Quantidade', produto.valor_prod as 'Valor'
+from cliente 
+join venda on cliente.cod_cli = venda.cod_cli_fk
+join itens_venda on venda.cod_vend = itens_venda.cod_vend_fk
+join produto on itens_venda.cod_prod_fk = produto.cod_prod;
+
+#exercicio06  não retorna nenhum resultado, mas a consulta é feita
+/*
+select pagamentos.cod_pag, pagamentos.data_pag, pagamentos.valor_pag, pagamentos.formapagamento_pag, caixa.cod_cai, 
+caixa.dataabertura_cai, funcionario.nome_func, despesas.descrição_desp, 
+despesas.datavencimento_desp, despesas.valor_desp
+from pagamentos
+join despesas on pagamentos.cod_desp_fk = despesas.cod_desp
+join caixa on pagamentos.cod_cai_fk = caixa.cod_cai
+join funcionario on pagamentos.cod_func_fk = funcionario.cod_func;
+
+select * from caixa join pagamentos on caixa.cod_cai= pagamentos.cod_cai_fk;
+select * from despesas join pagamentos on pagamentos.cod_desp_fk = despesas.cod_desp;
+select * from funcionario join pagamentos on funcionario.cod_func = pagamentos.cod_func_fk;
+*/
+
 #exercicio07
+select fornecedor.cod_forn as 'Código', fornecedor.razãosocial_forn as 'Nome Fornecedor', 
+(select count(compra.cod_forn_fk) from compra where compra.cod_forn_fk = fornecedor.cod_forn) as 'Quantidade de Compras', 
+(select sum(compra.valortotal_comp)from compra where compra.cod_forn_fk = fornecedor.cod_forn) as 'Total em Compras'
+from fornecedor
+join compra on fornecedor.cod_forn = compra.cod_forn_fk;
+
 #exercicio08
+select cliente.cod_cli as 'Código', cliente.nome_cli as 'Nome cliente', 
+(select avg(venda.valortotal_vend) from venda where venda.cod_cli_fk = cliente.cod_cli) as 'Média em Vendas', 
+(select sum(venda.valortotal_vend) from venda where venda.cod_cli_fk = cliente.cod_cli) as 'Total em Vendas'
+from cliente
+join venda on cliente.cod_cli = venda.cod_cli_fk;
+
 #exercicio09
-#exercicio10
+select venda.cod_vend, venda.data_vend, venda.formpag_vend, cliente.nome_cli,
+(select count(itens_venda.cod_prod_fk) from itens_venda where venda.cod_vend = itens_venda.cod_vend_fk) as 'Quantidade de Vendas', 
+(select sum(itens_venda.valor_itenv) from itens_venda where venda.cod_vend = itens_venda.cod_vend_fk) as 'Total em Vendas'
+from cliente
+join venda on cliente.cod_cli = venda.cod_cli_fk;
+
+#exercicio10  está retornando um resultado duplicado
+select funcionario.nome_func as 'Nome do Funcionário', 
+(select count(venda.cod_vend) from venda where venda.cod_func_fk = funcionario.cod_func) as 'Quantidade de Vendas', 
+(select sum(venda.valortotal_vend)from venda where venda.cod_func_fk = funcionario.cod_func) as 'Total em Vendas'
+from funcionario
+join venda on funcionario.cod_func = venda.cod_func_fk;
