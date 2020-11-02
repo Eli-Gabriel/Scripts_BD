@@ -162,8 +162,6 @@ insert into Pagamento values (null, 89.00, '2016-06-20', 'Boleto', '2016-06-22',
 insert into Pagamento values (null, 321.00, '2016-10-20', 'Convênio', '2016-10-20', '156546465454', 2);
 insert into Pagamento values (null, 123.00, '2016-11-08', 'Boleto', '2016-11-09', '132131564587', 1);
 
-
-
 /*
 Prezado (a) aluno (a),
 Utilize os conceitos aprendidos na Aula 02, 03, 04 e 05 da Disciplina 04 sobre a seleção de registros em banco de dados 
@@ -172,21 +170,18 @@ Você deverá utilizar o SCRIPT SQL em anexo a esta atividade. Abra o script no 
 o banco de dados e faça os comandos SELECT solicitados para resolver os problemas nos locais indicados. 
 Lembre-se que você deve escrever os comandos SQL da lista de exercício no mesmo Script da Mecânica disponibilizado à você.
 
-
-
 Lista de Exercício:
 
-1.    Selecione todos os registros da Conta Corrente substituindo as chaves estrangeiras (FK) pelo número da Agência e o nome do Cliente sucessivamente. Salve a consulta em uma Visão.
-2.    Selecione todos os registros da Transferência substituindo as FK de Conta Corrente por número e saldo da Conta, e mostre também os nomes dos Cliente de origem e destino. Salve a consulta em uma Visão.
-3.    Selecione todos os registros do Saque substituindo as FK de Conta Corrente por número e saldo da Conta, e mostre também o nome do Cliente. Salve a consulta em uma Visão.
-4.    Selecione todos os registros do Depósito substituindo as FK de Conta Corrente por número e saldo da Conta, e mostre também o nome do Cliente. Salve a consulta em uma Visão.
-5.    Selecione todos os registros do Pagamento substituindo as FK de Conta Corrente por número e saldo da Conta, e mostre também o nome do Cliente. Salve a consulta em uma Visão.
-6.    Selecione o código e nome do Cliente, informando o nome do seu Banco. Salve a consulta em uma Visão.
-7.    Selecione o nome do Banco, o número da Agência, o nome do Cliente, o número e o saldo da sua Conta Corrente. Salve a consulta em uma Visão.
-8.    Selecione o nome do Cliente, número da Conta Corrente, a soma, a média, o valor máximo, o valor mínimo e a quantidade de Saques realizados. Salve a consulta em uma Visão.
-9.    Selecione o nome do Cliente, número da Conta Corrente, a soma, a média, o valor máximo, o valor mínimo e a quantidade de Depósitos realizados. Salve a consulta em uma Visão.
+V 1. Selecione todos os registros da Conta Corrente substituindo as chaves estrangeiras (FK) pelo número da Agência e o nome do Cliente sucessivamente. Salve a consulta em uma Visão.
+2. Selecione todos os registros da Transferência substituindo as FK de Conta Corrente por número e saldo da Conta, e mostre também os nomes dos Cliente de origem e destino. Salve a consulta em uma Visão.
+V 3. Selecione todos os registros do Saque substituindo as FK de Conta Corrente por número e saldo da Conta, e mostre também o nome do Cliente. Salve a consulta em uma Visão.
+V 4. Selecione todos os registros do Depósito substituindo as FK de Conta Corrente por número e saldo da Conta, e mostre também o nome do Cliente. Salve a consulta em uma Visão.
+V 5. Selecione todos os registros do Pagamento substituindo as FK de Conta Corrente por número e saldo da Conta, e mostre também o nome do Cliente. Salve a consulta em uma Visão.
+V 6. Selecione o código e nome do Cliente, informando o nome do seu Banco. Salve a consulta em uma Visão.
+V 7. Selecione o nome do Banco, o número da Agência, o nome do Cliente, o número e o saldo da sua Conta Corrente. Salve a consulta em uma Visão.
+8. Selecione o nome do Cliente, número da Conta Corrente, a soma, a média, o valor máximo, o valor mínimo e a quantidade de Saques realizados. Salve a consulta em uma Visão.
+9. Selecione o nome do Cliente, número da Conta Corrente, a soma, a média, o valor máximo, o valor mínimo e a quantidade de Depósitos realizados. Salve a consulta em uma Visão.
 10. Selecione o nome do Cliente, número da Conta Corrente, a soma, a média, o valor máximo, o valor mínimo e a quantidade de Pagamentos realizados. Salve a consulta em uma Visão.
-
 
 Observações Importante:
 - Script deve ser construído para execução única;
@@ -198,8 +193,85 @@ Observações Importante:
 - O script deve ser criado para executar de uma só vez, ou seja, sem erros e na sequencia de criação de tabelas correta;
 */
 #EXERCICIOS
+#exercicio01
+create view ContaCorrenteDados as
+select conta_corrente.numero_cc as 'Número Conta Corrente', conta_corrente.dataAbertura_cc as 'Data de abertura', conta_corrente.saldo_cc as 'Saldo', 
+conta_corrente.valorLimite_cc as 'Valor Limite', conta_corrente.saldoComLimite_cc as 'Saldo Limite', cliente.nome_cli as 'Cliente', agencia.numero_ag as 'Agência'
+from conta_corrente
+join cliente on conta_corrente.cod_cli_fk = cliente.cod_cli
+join agencia on conta_corrente.cod_ag_fk = agencia.cod_ag;
 
+#exercicio02 Revisar um exercicio anterior que fazia "auto consulta"
+/*
+select transferencia.valor_trans as 'Valor', transferencia.data_trans as 'Data', transferencia.descricao_trans as 'Descrição', 
+conta_corrente.numero_cc as 'Conta Origem', conta_corrente.numero_cc as 'Conta Destino', 
+cliente.nome_cli as 'Origem', cliente.nome_cli as 'Destino'
+from transferencia
+join conta_corrente on transferencia.cod_cc_origem_fk = conta_corrente.cod_cc
+join conta_corrente on transferencia.cod_cc_destino_fk = conta_corrente.cod_cc
+join cliente on conta_corrente.cod_cli_fk = cliente.cod_cli
+;
 
+*/
+
+#exercicio03
+create view SaqueDados as
+select saque.valor_saq as 'Valor', saque.data_saq as 'Data', saque.local_saq as 'Local', saque.hora_saq as 'Hora', 
+conta_corrente.numero_cc as 'Número CC', conta_corrente.saldo_cc as 'Saldo CC', cliente.nome_cli as 'Cliente'
+from saque 
+join conta_corrente on saque.cod_cc_fk = conta_corrente.cod_cc
+join cliente on conta_corrente.cod_cli_fk = cliente.cod_cli;
+
+#exercicio04
+create view DepositoDados as
+select deposito.valor_dep as 'Valor', deposito.data_dep as 'Data', deposito.tipo_dep as 'Tipo de Depósito', 
+conta_corrente.numero_cc as 'Número CC', conta_corrente.saldo_cc as 'Saldo CC', cliente.nome_cli as 'Cliente'
+from deposito 
+join conta_corrente on deposito.cod_cc_fk = conta_corrente.cod_cc
+join cliente on conta_corrente.cod_cli_fk = cliente.cod_cli;
+
+#exercicio05
+create view PagamentoDados as
+select pagamento.valor_pag as 'Valor', pagamento.data_pag as 'Data', pagamento.tipo_pag as 'Tipo de Pagamento', 
+pagamento.dataVencimento_pag as 'Data de Vencimento', pagamento.codigoBarras_pag as 'Código de Barras', 
+conta_corrente.numero_cc as 'Número CC', conta_corrente.saldo_cc as 'Saldo CC', cliente.nome_cli as 'Cliente'
+from pagamento 
+join conta_corrente on pagamento.cod_cc_fk = conta_corrente.cod_cc
+join cliente on conta_corrente.cod_cli_fk = cliente.cod_cli;
+
+#exercicio06
+create view ClienteBanco as
+select cliente.cod_cli as 'Código do Cliente', cliente.nome_cli as 'Nome do Cliente', banco.nome_ban as 'Banco do Cliente'
+from cliente 
+join conta_corrente on cliente.cod_cli = conta_corrente.cod_cli_fk
+join agencia on conta_corrente.cod_ag_fk = agencia.cod_ag
+join banco on agencia.cod_ban_fk = banco.cod_ban;
+
+#exercicio07
+create view BancoClienteSaldo as
+select banco.nome_ban as 'Banco do Cliente', agencia.numero_ag as 'Número Agência', cliente.nome_cli as 'Nome do Cliente', 
+conta_corrente.numero_cc as 'CC Cliente', conta_corrente.saldo_cc as 'Saldo CC'
+from banco 
+join agencia on banco.cod_ban = agencia.cod_ban_fk
+join conta_corrente on agencia.cod_ag = conta_corrente.cod_ag_fk
+join cliente on conta_corrente.cod_cli_fk = cliente.cod_cli;
+
+#exercicio08 precisa de revisão, valores duplicados
+/*
+select cliente.nome_cli as 'Nome Cliente', conta_corrente.numero_cc as 'Número CC', 
+(select sum(saque.valor_saq) from saque where saque.cod_cc_fk = conta_corrente.cod_cc) as 'Soma de saques',
+(select avg(saque.valor_saq) from saque where saque.cod_cc_fk = conta_corrente.cod_cc) as 'Média de saques',
+(select max(saque.valor_saq) from saque where saque.cod_cc_fk = conta_corrente.cod_cc) as 'Valor Máximo Sacado',
+(select min(saque.valor_saq) from saque where saque.cod_cc_fk = conta_corrente.cod_cc) as 'Valor Mínimo Sacado',
+(select count(saque.valor_saq) from saque where saque.cod_cc_fk = conta_corrente.cod_cc) as 'Total de Saques'
+from cliente
+join conta_corrente on cliente.cod_cli = conta_corrente.cod_cli_fk
+join saque on conta_corrente.cod_cc = saque.cod_cc_fk
+;
+
+*/
+#exercicio09
+#exercicio10
 
 
 
