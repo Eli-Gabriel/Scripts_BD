@@ -163,13 +163,6 @@ insert into Pagamento values (null, 321.00, '2016-10-20', 'Convênio', '2016-10-
 insert into Pagamento values (null, 123.00, '2016-11-08', 'Boleto', '2016-11-09', '132131564587', 1);
 
 /*
-Prezado (a) aluno (a),
-Utilize os conceitos aprendidos na Aula 02, 03, 04 e 05 da Disciplina 04 sobre a seleção de registros em banco de dados 
-e faça os exercícios a seguir no banco de dados da BD_Agência_Bancária 5.0
-Você deverá utilizar o SCRIPT SQL em anexo a esta atividade. Abra o script no seu MySQL Workbench, execute o mesmo para criar 
-o banco de dados e faça os comandos SELECT solicitados para resolver os problemas nos locais indicados. 
-Lembre-se que você deve escrever os comandos SQL da lista de exercício no mesmo Script da Mecânica disponibilizado à você.
-
 Lista de Exercício:
 
 V 1. Selecione todos os registros da Conta Corrente substituindo as chaves estrangeiras (FK) pelo número da Agência e o nome do Cliente sucessivamente. Salve a consulta em uma Visão.
@@ -179,9 +172,9 @@ V 4. Selecione todos os registros do Depósito substituindo as FK de Conta Corre
 V 5. Selecione todos os registros do Pagamento substituindo as FK de Conta Corrente por número e saldo da Conta, e mostre também o nome do Cliente. Salve a consulta em uma Visão.
 V 6. Selecione o código e nome do Cliente, informando o nome do seu Banco. Salve a consulta em uma Visão.
 V 7. Selecione o nome do Banco, o número da Agência, o nome do Cliente, o número e o saldo da sua Conta Corrente. Salve a consulta em uma Visão.
-8. Selecione o nome do Cliente, número da Conta Corrente, a soma, a média, o valor máximo, o valor mínimo e a quantidade de Saques realizados. Salve a consulta em uma Visão.
-9. Selecione o nome do Cliente, número da Conta Corrente, a soma, a média, o valor máximo, o valor mínimo e a quantidade de Depósitos realizados. Salve a consulta em uma Visão.
-10. Selecione o nome do Cliente, número da Conta Corrente, a soma, a média, o valor máximo, o valor mínimo e a quantidade de Pagamentos realizados. Salve a consulta em uma Visão.
+V 8. Selecione o nome do Cliente, número da Conta Corrente, a soma, a média, o valor máximo, o valor mínimo e a quantidade de Saques realizados. Salve a consulta em uma Visão.
+V 9. Selecione o nome do Cliente, número da Conta Corrente, a soma, a média, o valor máximo, o valor mínimo e a quantidade de Depósitos realizados. Salve a consulta em uma Visão.
+V 10. Selecione o nome do Cliente, número da Conta Corrente, a soma, a média, o valor máximo, o valor mínimo e a quantidade de Pagamentos realizados. Salve a consulta em uma Visão.
 
 Observações Importante:
 - Script deve ser construído para execução única;
@@ -201,17 +194,19 @@ from conta_corrente
 join cliente on conta_corrente.cod_cli_fk = cliente.cod_cli
 join agencia on conta_corrente.cod_ag_fk = agencia.cod_ag;
 
-#exercicio02 Revisar um exercicio anterior que fazia "auto consulta"
+#exercicio02 
+#Dar um jeito de fazer o mesmo join duas vezes
 /*
-select transferencia.valor_trans as 'Valor', transferencia.data_trans as 'Data', transferencia.descricao_trans as 'Descrição', 
-conta_corrente.numero_cc as 'Conta Origem', conta_corrente.numero_cc as 'Conta Destino', 
-cliente.nome_cli as 'Origem', cliente.nome_cli as 'Destino'
+select transferencia.valor_trans as 'Valor', transferencia.data_trans as 'Data', transferencia.descricao_trans as 'Descrição',
+(select conta_corrente.numero_cc from conta_corrente where conta_corrente.cod_cc = transferencia.cod_cc_origem_fk) as 'Conta Origem',
+(select cliente.nome_cli from cliente where conta_corrente.cod_cli_fk = cliente.cod_cli and conta_corrente.cod_cc = transferencia.cod_cc_origem_fk) as 'Cliente que enviou',
+(select conta_corrente.numero_cc from conta_corrente where conta_corrente.cod_cc = transferencia.cod_cc_destino_fk) as 'Conta Destino', 
+(select cliente.nome_cli from cliente where conta_corrente.cod_cli_fk = cliente.cod_cli and conta_corrente.cod_cc = transferencia.cod_cc_destino_fk) as 'Cliente que recebeu'
 from transferencia
 join conta_corrente on transferencia.cod_cc_origem_fk = conta_corrente.cod_cc
-join conta_corrente on transferencia.cod_cc_destino_fk = conta_corrente.cod_cc
+#join conta_corrente on transferencia.cod_cc_destino_fk = conta_corrente.cod_cc
 join cliente on conta_corrente.cod_cli_fk = cliente.cod_cli
 ;
-
 */
 
 #exercicio03
@@ -257,7 +252,7 @@ join conta_corrente on agencia.cod_ag = conta_corrente.cod_ag_fk
 join cliente on conta_corrente.cod_cli_fk = cliente.cod_cli;
 
 #exercicio08 precisa de revisão, valores duplicados
-/*
+create view ClienteSaque as
 select cliente.nome_cli as 'Nome Cliente', conta_corrente.numero_cc as 'Número CC', 
 (select sum(saque.valor_saq) from saque where saque.cod_cc_fk = conta_corrente.cod_cc) as 'Soma de saques',
 (select avg(saque.valor_saq) from saque where saque.cod_cc_fk = conta_corrente.cod_cc) as 'Média de saques',
@@ -267,12 +262,33 @@ select cliente.nome_cli as 'Nome Cliente', conta_corrente.numero_cc as 'Número 
 from cliente
 join conta_corrente on cliente.cod_cli = conta_corrente.cod_cli_fk
 join saque on conta_corrente.cod_cc = saque.cod_cc_fk
-;
+group by cliente.nome_cli;
 
-*/
 #exercicio09
-#exercicio10
+create view ClienteDeposito as
+select cliente.nome_cli as 'Nome Cliente', conta_corrente.numero_cc as 'Número CC', 
+(select sum(deposito.valor_dep) from deposito where deposito.cod_cc_fk = conta_corrente.cod_cc) as 'Soma de Depósitos',
+(select avg(deposito.valor_dep) from deposito where deposito.cod_cc_fk = conta_corrente.cod_cc) as 'Média de Depósitos',
+(select max(deposito.valor_dep) from deposito where deposito.cod_cc_fk = conta_corrente.cod_cc) as 'Valor Máximo Depositado',
+(select min(deposito.valor_dep) from deposito where deposito.cod_cc_fk = conta_corrente.cod_cc) as 'Valor Mínimo Depositado',
+(select count(deposito.valor_dep) from deposito where deposito.cod_cc_fk = conta_corrente.cod_cc) as 'Total de Depositos'
+from cliente
+join conta_corrente on cliente.cod_cli = conta_corrente.cod_cli_fk
+join deposito on conta_corrente.cod_cc = deposito.cod_cc_fk
+group by cliente.nome_cli;
 
+#exercicio10
+create view ClientePagamento as
+select cliente.nome_cli as 'Nome Cliente', conta_corrente.numero_cc as 'Número CC', 
+(select sum(pagamento.valor_pag) from pagamento where pagamento.cod_cc_fk = conta_corrente.cod_cc) as 'Soma de Pagamentos',
+(select avg(pagamento.valor_pag) from pagamento where pagamento.cod_cc_fk = conta_corrente.cod_cc) as 'Média de Pagamentos',
+(select max(pagamento.valor_pag) from pagamento where pagamento.cod_cc_fk = conta_corrente.cod_cc) as 'Valor Máximo Pago',
+(select min(pagamento.valor_pag) from pagamento where pagamento.cod_cc_fk = conta_corrente.cod_cc) as 'Valor Mínimo Pago',
+(select count(pagamento.valor_pag) from pagamento where pagamento.cod_cc_fk = conta_corrente.cod_cc) as 'Total de Pagamentos'
+from cliente
+join conta_corrente on cliente.cod_cli = conta_corrente.cod_cli_fk
+join pagamento on conta_corrente.cod_cc = pagamento.cod_cc_fk
+group by cliente.nome_cli;
 
 
 

@@ -55,7 +55,7 @@ select paciente.nome from paciente
 inner join consulta on paciente.id_paciente = consulta.id_paciente;
 --*/
 
---8 
+--8
 /*8 - selecione o nome de todos os remédios prescritos para um determinado paciente;
 select remedio.nome from remedio
 inner join prescreve on remedio.id_remedio = prescreve.id_remedio
