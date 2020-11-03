@@ -1,7 +1,7 @@
 #NOME COMPLETO:_________________________________________
-
-create database bd_Imperio_Professor;
-use bd_Imperio_Professor;
+drop database if EXISTS bd_Imperio_Rodoviaria;
+create database bd_Imperio_Rodoviaria;
+use bd_Imperio_Rodoviaria;
 
 create table Estado (
 cod_est int not null primary key auto_increment,
@@ -146,5 +146,218 @@ foreign key (cod_pas) references Passagem (cod_pas)
 );
 
 #INICIE A PARTIR DAQUI SUA LISTA DE EXERCÍCIOS
+#exercício01
+drop procedure if exists Inserir_Estado;
+DELIMITER $$
+CREATE PROCEDURE Inserir_Estado (nome varchar(200), sigla varchar(2))
+BEGIN
+DECLARE nomeD varchar(200);
+
+select nome_est into nomeD from estado where nome_est = nome;
+
+if (nomeD <> '') then
+	select concat ('Estado já existente!') as Msg;
+else
+	insert into estado values (null, nome, sigla);
+    select concat ('Estado cadastrado com sucesso!') as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
+call Inserir_Estado ('Rondônia', 'RO');
+call Inserir_Estado ('Mato Grosso', 'MT');
+call Inserir_Estado ('Acre', 'AC');
+call Inserir_Estado ('Amazonas', 'AM');
+call Inserir_Estado ('Mato Grosso do Sul', 'MS');
+call Inserir_Estado ('Tocantins', 'TO');
+call Inserir_Estado ('Bahia', 'BA');
+call Inserir_Estado ('Paraná', 'PR');
+call Inserir_Estado ('Minas Gerais', 'MG');
+call Inserir_Estado ('Pernanbuco', 'PE');
 
 
+
+#exercício02
+drop procedure if exists Inserir_Cidade;
+DELIMITER $$
+CREATE PROCEDURE Inserir_Cidade (nome varchar(200), codigo int)
+BEGIN
+DECLARE nomeC varchar(200);
+DECLARE cod int;
+
+select nome_cid into nomeC from cidade where nome_cid = nome;
+select cod_est into cod from estado where cod_est = codigo;
+
+if (cod <> '') then
+	if (nomeC <> '') then
+		select concat ('Cidade já existente!') as Msg;
+	else
+		insert into cidade values (null, nome, codigo);
+		select concat ('Cidade cadastrada com sucesso!') as Msg;
+	end if;
+else
+	select concat ('Estado Inválido!') as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
+call Inserir_Cidade ('Ji-paraná', 1);
+call Inserir_Cidade ('Presidente Médici', 1);
+call Inserir_Cidade ('Ouro Preto do Oeste', 1);
+call Inserir_Cidade ('Jaru', 1);
+call Inserir_Cidade ('Porto Velho', 1);
+call Inserir_Cidade ('Ariquemes', 1);
+call Inserir_Cidade ('Candeias do Jamari', 1);
+call Inserir_Cidade ('Vilhena', 1);
+call Inserir_Cidade ('Cacoal', 1);
+call Inserir_Cidade ('Costa Marques', 1);
+call Inserir_Cidade ('Cuiabá', 2);
+call Inserir_Cidade ('Várzea Grande', 2);
+call Inserir_Cidade ('Rondonópolis', 2);
+call Inserir_Cidade ('Rio Branco', 3);
+call Inserir_Cidade ('Cruzeiro do Sul', 3);
+call Inserir_Cidade ('Manaus', 4);
+call Inserir_Cidade ('Parintins', 4);
+call Inserir_Cidade ('Itacoatiara', 4);
+call Inserir_Cidade ('Campo Grande', 5);
+call Inserir_Cidade ('Dourados', 5);
+
+
+
+#exercício03
+drop procedure if exists Inserir_Endereco;
+DELIMITER $$
+CREATE PROCEDURE Inserir_Endereco (rua varchar(300), numero int, bairro varchar(100), cep varchar(100), codigo int)
+BEGIN
+declare cod_c int;
+
+select cod_cid into cod_c from cidade where cod_cid = codigo;
+
+if (cod_c <> '') then
+	insert into endereço values (null, rua, numero, bairro, cep, codigo);
+    select concat ('Endereço cadastrado com sucesso!') as Msg;
+else
+	select concat ('Cidade inválida!') as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
+call Inserir_Endereco('Av. Rio Branco', 6656, 'Centro', '71669000', 1);
+call Inserir_Endereco('Rua dos Imigrantes', 4270, 'Ao Lado', '09852-210', 8);
+call Inserir_Endereco('Rua Duque de Caxias',9190, 'Biquera', '69918-652', 4);
+call Inserir_Endereco('Av. 7 de Setembro', 8402, 'Centro', '69919-614', 9);
+call Inserir_Endereco('Av. Tatooine', 6996, 'Centro', '44050-428', 5);
+call Inserir_Endereco('Av. Madeireira', 0900, 'Silva', '69316-692', 15);
+call Inserir_Endereco('Rua Constelação', 0101, 'Centro', '09852-210', 8);
+call Inserir_Endereco('Rua Costelão', 0001, 'Cunha', '69082-811', 3);
+call Inserir_Endereco('Av. 15 de Novembro', 6302, 'Jardin dos Imigrantes', '71669000', 1);
+call Inserir_Endereco('Rua José Vidal', 6969, 'Centro', '58091-200', 2);
+
+
+
+#exercício04
+drop procedure if exists Inserir_Sexo;
+DELIMITER $$
+CREATE PROCEDURE Inserir_Sexo (nome varchar(100))
+BEGIN
+
+declare s varchar(100);
+
+select nome_sex into s from sexo where nome_sex = nome;
+
+if (nome <> '') then
+	if (s <> '') then
+		select concat ('Sexo existente!') as Msg;
+	else
+        insert into sexo values (null, nome);
+		select concat ('Sexo cadastrada com sucesso!') as Msg;
+	end if;
+else
+	select concat ('Nome do sexo VAZIO!') as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
+call Inserir_Sexo('Masculino');
+call Inserir_Sexo('Feminino');
+
+
+
+#exercício05
+drop procedure if exists Inserir_Telefone;
+DELIMITER $$
+CREATE PROCEDURE Inserir_Telefone (celular varchar(100), casa varchar(100),trabalho varchar(100))
+BEGIN
+
+if (celular <> '') then
+	insert into telefone values(null, celular, casa, trabalho);
+	select concat ('Número(s) de Telefone cadastrado(s) com sucesso!') as Msg;
+else
+	select concat ('Número de Celular NÃO pode ser vazio') as Msg;	
+end if;
+
+END;
+$$ DELIMITER ;
+
+call Inserir_Telefone('87236', '', '');
+call Inserir_Telefone('083478', '', '3434534');
+call Inserir_Telefone('324636', '2346345', '');
+call Inserir_Telefone('3453453', '362362', '236365');
+call Inserir_Telefone('234634', '3574624', '2369345');
+
+
+
+#exercício06
+drop procedure if exists Inserir_Cliente;
+DELIMITER $$
+CREATE PROCEDURE Inserir_Cliente (nome varchar(200), estadocivil varchar(50), cpf varchar(20), rg varchar(30), datanasc date, codsex int, codend int, codtel int)
+BEGIN
+
+declare endereco int;
+declare sexo int;
+declare telefone int;
+
+select cod_end into endereco from endereço where cod_end = codend;
+select cod_sex into sexo from sexo where cod_sex = codsex;
+select cod_tel into telefone from telefone where cod_tel = codtel;
+
+if (endereco <> '') then
+	if (sexo <> '') then
+		if (telefone <> '') then
+			insert into cliente values (null, nome, estadocivil, cpf, rg, datanasc, codsex, codend, codtel);
+			select concat ('Cliente cadastrado com sucesso!') as Msg;
+		else
+			select concat ('Telefone inexistente!') as Msg;
+		end if;
+	else
+		select concat ('Sexo inexistente!') as Msg;
+	end if;
+else
+	select concat ('Endereço inexistente!') as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
+call Inserir_Cliente('Pedro Cunha da Silva', 'Viúvo', '12345678900', '12345670', '2000-12-25', 1, 4, 3);
+call Inserir_Cliente('Maria Madalena de Oliveira', 'Solteira', '404.890.610-01', '(16) 98887-7442', '1985-08-27', 2, 3, 2);
+call Inserir_Cliente('Jackson Henrique', 'Casado', '390.114.090-51', '(96) 99496-0807', '1992-10-11', 1, 7, 1);
+call Inserir_Cliente('Jaime Carvalho', 'Casado', '430.539.000-09', '(84) 98294-8673', '1999-05-10', 1, 5, 4);
+call Inserir_Cliente('Namaria', 'Casada', '249.735.550-96', '(86) 99334-5269', '1984-01-18', 2, 9, 5);
+
+
+
+#exercício07
+#exercício08
+#exercício09
+#exercício10
+
+
+/*
+drop procedure if exists Inserir_Cidade;
+DELIMITER $$
+CREATE PROCEDURE Inserir_Cidade (nome varchar(200), codigo int)
+BEGIN
+
+END;
+$$ DELIMITER ;
+*/
