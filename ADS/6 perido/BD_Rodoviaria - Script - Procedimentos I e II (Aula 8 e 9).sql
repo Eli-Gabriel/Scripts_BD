@@ -347,17 +347,110 @@ call Inserir_Cliente('Namaria', 'Casada', '249.735.550-96', '(86) 99334-5269', '
 
 
 #exercício07
-#exercício08
-#exercício09
-#exercício10
-
-
-/*
-drop procedure if exists Inserir_Cidade;
+drop procedure if exists Inserir_Departamento;
 DELIMITER $$
-CREATE PROCEDURE Inserir_Cidade (nome varchar(200), codigo int)
+CREATE PROCEDURE Inserir_Departamento (nome varchar(100), descricao varchar(300))
+BEGIN
+
+if (nome <> '') then
+	if	(descricao <> '') then
+		insert into departamento values(null, nome, descricao);
+		select concat ('Departamento cadastrado com sucesso!') as Msg;
+	else 
+		select concat ('Descrição do departamento NÃO pode ser vazio') as Msg;	
+    end if;
+else
+	select concat ('Nome do departamento NÃO pode ser vazio') as Msg;	
+end if;
+
+
+END;
+$$ DELIMITER ;
+
+call Inserir_Departamento('Vendas de Passagens', 'Departamento responsavel pela venda de passagens');
+call Inserir_Departamento('RH', 'Recursos Humanos');
+call Inserir_Departamento('Contabilidade', 'Fazem contas');
+
+
+
+#exercício08
+#Outros funcionarios que não sejam vendedores podem ser cadastrados no departaemnto departamento de venda de passagens??
+drop procedure if exists Inserir_Funcionario;
+DELIMITER $$
+CREATE PROCEDURE Inserir_Funcionario (nome varchar(200), cpf varchar(20), rg varchar(20), datanasc date, salario double, funcao varchar(50), sexo int, departament int, endereco int, telefone int)
+BEGIN
+declare sex int;
+declare dep int;
+declare ende int;
+declare tel int;
+
+select cod_sex into sex from sexo where cod_sex = sexo;
+select cod_dep into dep from departamento where cod_dep = departament;
+select cod_end into ende from endereço where cod_end = endereco;
+select cod_tel into tel from telefone where cod_tel = telefone;
+
+if (ende <> '') then
+	if (sex <> '') then
+		if (tel <> '') then
+			if (dep <> '') then
+				if (funcao = 'Vendedor' and departament <> 1) then
+					select concat ('Vendedores DEVEM ser cadastrados no departamento de Vendas de Passagens') as Msg;
+				else
+					insert into funcionario values(null, nome, cpf, rg, datanasc, salario, funcao, sexo, departament, endereco, telefone);
+					select concat ('Funcionario Inserdo com sucesso!') as Msg;
+				end if;
+			else select concat ('Departamento Inexistente!') as Msg;
+			end if;
+		else select concat ('Telefone Inexistente!') as Msg;
+		end if;
+    else select concat ('Sexo Inexistente!') as Msg;
+	end if;
+else select concat ('Endereço Inexistente!') as Msg;
+end if;
+
+END;
+$$ DELIMITER ;
+
+call Inserir_Funcionario('Pedro Carlos de Almeida', '327.290.139-62', '50.883.043-6', '1986-10-10', 2500.0, 'Vendedor', 1, 1, 3, 5);
+call Inserir_Funcionario('Jaqueline Rebeca da Paz', '867.400.213-76', '32.251.856-8', '1990-03-15', 3750.0, 'Contador', 2, 3, 2, 3);
+call Inserir_Funcionario('Nicolas Felipe Igor Baptista', '793.560.855-52', '27.913.286-4', '1994-09-10', 1500.0, 'Vendedor', 1, 1, 4, 1);
+call Inserir_Funcionario('Silvana Priscila Galvão', '116.278.340-01', '48.608.546-6', '1997-05-07', 1500.0, 'Atendente', 2, 3, 10, 4);
+
+
+
+#exercício09
+drop procedure if exists Inserir_Onibus;
+DELIMITER $$
+CREATE PROCEDURE Inserir_Onibus (modelo varchar(100), marca varchar(100), placa varchar(50), tipo varchar(100))
+BEGIN
+
+if ((modelo='Amazon Bus Premium' and tipo ='Executive') or (modelo='Amazon Bus Leito' and tipo ='Confort')) then
+	insert into onibus values(null, modelo, marca, placa, tipo);
+    select concat ('Ônibus Cadastrado com sucesso!');
+else select concat ('Tipo e/ou Modelo de ônibus inválido(s)!');
+end if;
+
+END;
+$$ DELIMITER ;
+
+select * from onibus;
+call Inserir_Onibus('Amazon Bus Premium', 'Ford', 'qpa93', 'Executive');
+call Inserir_Onibus('Amazon Bus Premium', 'Wolksvagen', 'kapa264', 'Executive');
+call Inserir_Onibus('Amazon Bus Leito', 'Fiat', 'teh927', 'Confort');
+call Inserir_Onibus('Amazon Bus Leito', 'Fait', 'agr290', 'Confort');
+
+
+
+#exercício10
+drop procedure if exists Inserir_Poltrona;
+DELIMITER $$
+CREATE PROCEDURE Inserir_Poltrona (numero int, numero varchar(100), onibus int)
 BEGIN
 
 END;
 $$ DELIMITER ;
-*/
+
+call Inserir_Poltrona();
+call Inserir_Poltrona();
+call Inserir_Poltrona();
+call Inserir_Poltrona();
