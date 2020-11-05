@@ -444,13 +444,48 @@ call Inserir_Onibus('Amazon Bus Leito', 'Fait', 'agr290', 'Confort');
 #exercício10
 drop procedure if exists Inserir_Poltrona;
 DELIMITER $$
+CREATE PROCEDURE Inserir_Poltrona (onibus int)
+BEGIN
+
+declare tipo varchar(100);
+declare qtd int;
+declare qtd_max int;
+set qtd = 1;
+
+#pegar o tipo de onibus
+select tipo_oni into tipo from onibus where cod_oni = onibus;
+
+#verificar o tipo de onibus
+if (tipo = 'Executive') then
+	set qtd_max = 48;
+else
+	if(tipo = 'Confort') then
+		set qtd_max = 58;		
+    else
+		select concat ('Ônibus inválido!') as Msg;
+    end if;
+end if;
+
+while qtd <= qtd_max DO
+	insert into poltrona values(null, qtd, 'Livre', onibus);
+	set qtd = qtd + 1;
+end while;
+    
+select concat (qtd, ' poltronas inseridas con sucesso!') as Msg;
+END;
+$$ DELIMITER ;
+
+call Inserir_Poltrona(1);
+call Inserir_Poltrona(2);
+call Inserir_Poltrona(3);
+call Inserir_Poltrona(4);
+
+/*
+drop procedure if exists Inserir_Poltrona;
+DELIMITER $$
 CREATE PROCEDURE Inserir_Poltrona (numero int, numero varchar(100), onibus int)
 BEGIN
 
 END;
 $$ DELIMITER ;
-
-call Inserir_Poltrona();
-call Inserir_Poltrona();
-call Inserir_Poltrona();
-call Inserir_Poltrona();
+*/
