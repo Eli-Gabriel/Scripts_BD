@@ -426,8 +426,8 @@ BEGIN
 
 if ((modelo='Amazon Bus Premium' and tipo ='Executive') or (modelo='Amazon Bus Leito' and tipo ='Confort')) then
 	insert into onibus values(null, modelo, marca, placa, tipo);
-    select concat ('Ônibus Cadastrado com sucesso!');
-else select concat ('Tipo e/ou Modelo de ônibus inválido(s)!');
+    select concat ('Ônibus Cadastrado com sucesso!') as Msg;
+else select concat ('Tipo e/ou Modelo de ônibus inválido(s)!') as Msg;
 end if;
 
 END;
@@ -438,6 +438,7 @@ call Inserir_Onibus('Amazon Bus Premium', 'Ford', 'qpa93', 'Executive');
 call Inserir_Onibus('Amazon Bus Premium', 'Wolksvagen', 'kapa264', 'Executive');
 call Inserir_Onibus('Amazon Bus Leito', 'Fiat', 'teh927', 'Confort');
 call Inserir_Onibus('Amazon Bus Leito', 'Fait', 'agr290', 'Confort');
+call Inserir_Onibus('Amazon Bus Leito', 'Kia', 'abt623', 'Confort');
 
 
 
@@ -480,6 +481,53 @@ call Inserir_Poltrona(2);
 call Inserir_Poltrona(3);
 call Inserir_Poltrona(4);
 
+
+
+#exercício11
+#Não sei o que caralhos ta acontecendo por aqui
+drop procedure if exists Inserir_Trecho;
+DELIMITER $$
+CREATE PROCEDURE Inserir_Trecho (data_part date, data_cheg date, horario_part time, horario_cheg time, distancia float, origem int, destino int, onibus int)
+BEGIN
+declare tarifa float;
+declare n int;
+
+select poltrona.número_pol into n from poltrona where ((poltrona.cod_oni = onibus) and (poltrona.situação_pol <> 'Livre')) group by poltrona.situação_pol;
+select n as Msg;
+
+if (distancia < 50.0) then set tarifa = 3; end if;
+if ((distancia >= 50.0) and (distancia < 200.0)) then set tarifa = 5; end if;
+if (distancia >= 200.0) then set tarifa = 10; end if;
+
+if (n = '') then
+	if (origem <> destino) then
+		if (data_cheg >= data_part) then
+			#insert into trecho_viagem values(null, data_part, data_cheg, horario_part, horario_cheg, distancia, tarifa, origem, destino, onibus);
+            select concat ('Trecho cadastrado com sucesso!') as Msg;
+		else select concat ('Dia de chegada não pode se antes do dia de saída!') as Msg;
+        end if;
+	else select concat ('Cidade de Origem/Destino não podem ser iguais!') as Msg;
+    end if;
+else select concat ('Ônibus Indisponível') as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
+select * from cidade;
+select * from poltrona where cod_oni = 2;
+select * from trecho_viagem;
+call Inserir_Trecho(data_part, data_cheg, horario_part, horario_cheg, distancia, origem, destino, onibus);
+call Inserir_Trecho('2020-10-15', '2020-10-16', '13:30', '01:00', 50, 5, 1, 1);
+call Inserir_Trecho();
+call Inserir_Trecho();
+call Inserir_Trecho();
+
+
+
+#exercício12
+#exercício13
+#exercício14
+#exercício15
 /*
 drop procedure if exists Inserir_Poltrona;
 DELIMITER $$
