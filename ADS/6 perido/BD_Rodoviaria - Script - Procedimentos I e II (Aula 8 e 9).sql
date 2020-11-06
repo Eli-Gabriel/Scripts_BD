@@ -156,10 +156,10 @@ DECLARE nomeD varchar(200);
 select nome_est into nomeD from estado where nome_est = nome;
 
 if (nomeD <> '') then
-	select concat ('Estado já existente!') as Msg;
+	select concat('Estado já existente!') as Msg;
 else
 	insert into estado values (null, nome, sigla);
-    select concat ('Estado cadastrado com sucesso!') as Msg;
+    select concat('Estado cadastrado com sucesso!') as Msg;
 end if;
 END;
 $$ DELIMITER ;
@@ -190,13 +190,13 @@ select cod_est into cod from estado where cod_est = codigo;
 
 if (cod <> '') then
 	if (nomeC <> '') then
-		select concat ('Cidade já existente!') as Msg;
+		select concat('Cidade já existente!') as Msg;
 	else
 		insert into cidade values (null, nome, codigo);
-		select concat ('Cidade cadastrada com sucesso!') as Msg;
+		select concat('Cidade cadastrada com sucesso!') as Msg;
 	end if;
 else
-	select concat ('Estado Inválido!') as Msg;
+	select concat('Estado Inválido!') as Msg;
 end if;
 END;
 $$ DELIMITER ;
@@ -235,9 +235,9 @@ select cod_cid into cod_c from cidade where cod_cid = codigo;
 
 if (cod_c <> '') then
 	insert into endereço values (null, rua, numero, bairro, cep, codigo);
-    select concat ('Endereço cadastrado com sucesso!') as Msg;
+    select concat('Endereço cadastrado com sucesso!') as Msg;
 else
-	select concat ('Cidade inválida!') as Msg;
+	select concat('Cidade inválida!') as Msg;
 end if;
 END;
 $$ DELIMITER ;
@@ -267,13 +267,13 @@ select nome_sex into s from sexo where nome_sex = nome;
 
 if (nome <> '') then
 	if (s <> '') then
-		select concat ('Sexo existente!') as Msg;
+		select concat('Sexo existente!') as Msg;
 	else
         insert into sexo values (null, nome);
 		select concat ('Sexo cadastrada com sucesso!') as Msg;
 	end if;
 else
-	select concat ('Nome do sexo VAZIO!') as Msg;
+	select concat('Nome do sexo VAZIO!') as Msg;
 end if;
 END;
 $$ DELIMITER ;
@@ -291,9 +291,9 @@ BEGIN
 
 if (celular <> '') then
 	insert into telefone values(null, celular, casa, trabalho);
-	select concat ('Número(s) de Telefone cadastrado(s) com sucesso!') as Msg;
+	select concat('Número(s) de Telefone cadastrado(s) com sucesso!') as Msg;
 else
-	select concat ('Número de Celular NÃO pode ser vazio') as Msg;	
+	select concat('Número de Celular NÃO pode ser vazio') as Msg;	
 end if;
 
 END;
@@ -325,15 +325,15 @@ if (endereco <> '') then
 	if (sexo <> '') then
 		if (telefone <> '') then
 			insert into cliente values (null, nome, estadocivil, cpf, rg, datanasc, codsex, codend, codtel);
-			select concat ('Cliente cadastrado com sucesso!') as Msg;
+			select concat('Cliente cadastrado com sucesso!') as Msg;
 		else
-			select concat ('Telefone inexistente!') as Msg;
+			select concat('Telefone inexistente!') as Msg;
 		end if;
 	else
-		select concat ('Sexo inexistente!') as Msg;
+		select concat('Sexo inexistente!') as Msg;
 	end if;
 else
-	select concat ('Endereço inexistente!') as Msg;
+	select concat('Endereço inexistente!') as Msg;
 end if;
 END;
 $$ DELIMITER ;
@@ -355,12 +355,12 @@ BEGIN
 if (nome <> '') then
 	if	(descricao <> '') then
 		insert into departamento values(null, nome, descricao);
-		select concat ('Departamento cadastrado com sucesso!') as Msg;
+		select concat('Departamento cadastrado com sucesso!') as Msg;
 	else 
-		select concat ('Descrição do departamento NÃO pode ser vazio') as Msg;	
+		select concat('Descrição do departamento NÃO pode ser vazio') as Msg;	
     end if;
 else
-	select concat ('Nome do departamento NÃO pode ser vazio') as Msg;	
+	select concat('Nome do departamento NÃO pode ser vazio') as Msg;	
 end if;
 
 
@@ -394,18 +394,18 @@ if (ende <> '') then
 		if (tel <> '') then
 			if (dep <> '') then
 				if (funcao = 'Vendedor' and departament <> 1) then
-					select concat ('Vendedores DEVEM ser cadastrados no departamento de Vendas de Passagens') as Msg;
+					select concat('Vendedores DEVEM ser cadastrados no departamento de Vendas de Passagens') as Msg;
 				else
 					insert into funcionario values(null, nome, cpf, rg, datanasc, salario, funcao, sexo, departament, endereco, telefone);
-					select concat ('Funcionario Inserdo com sucesso!') as Msg;
+					select concat('Funcionario Inserdo com sucesso!') as Msg;
 				end if;
-			else select concat ('Departamento Inexistente!') as Msg;
+			else select concat('Departamento Inexistente!') as Msg;
 			end if;
-		else select concat ('Telefone Inexistente!') as Msg;
+		else select concat('Telefone Inexistente!') as Msg;
 		end if;
-    else select concat ('Sexo Inexistente!') as Msg;
+    else select concat('Sexo Inexistente!') as Msg;
 	end if;
-else select concat ('Endereço Inexistente!') as Msg;
+else select concat('Endereço Inexistente!') as Msg;
 end if;
 
 END;
@@ -426,8 +426,8 @@ BEGIN
 
 if ((modelo='Amazon Bus Premium' and tipo ='Executive') or (modelo='Amazon Bus Leito' and tipo ='Confort')) then
 	insert into onibus values(null, modelo, marca, placa, tipo);
-    select concat ('Ônibus Cadastrado com sucesso!') as Msg;
-else select concat ('Tipo e/ou Modelo de ônibus inválido(s)!') as Msg;
+    select concat('Ônibus Cadastrado com sucesso!') as Msg;
+else select concat('Tipo e/ou Modelo de ônibus inválido(s)!') as Msg;
 end if;
 
 END;
@@ -439,6 +439,7 @@ call Inserir_Onibus('Amazon Bus Premium', 'Wolksvagen', 'kapa264', 'Executive');
 call Inserir_Onibus('Amazon Bus Leito', 'Fiat', 'teh927', 'Confort');
 call Inserir_Onibus('Amazon Bus Leito', 'Fait', 'agr290', 'Confort');
 call Inserir_Onibus('Amazon Bus Leito', 'Kia', 'abt623', 'Confort');
+#Precisa de mais uma inserção. Explicado na atividade 11.
 
 
 
@@ -463,7 +464,7 @@ else
 	if(tipo = 'Confort') then
 		set qtd_max = 58;		
     else
-		select concat ('Ônibus inválido!') as Msg;
+		select concat('Ônibus inválido!') as Msg;
     end if;
 end if;
 
@@ -472,7 +473,7 @@ while qtd <= qtd_max DO
 	set qtd = qtd + 1;
 end while;
     
-select concat (qtd, ' poltronas inseridas con sucesso!') as Msg;
+select concat(qtd, ' poltronas inseridas con sucesso!') as Msg;
 END;
 $$ DELIMITER ;
 
@@ -480,60 +481,190 @@ call Inserir_Poltrona(1);
 call Inserir_Poltrona(2);
 call Inserir_Poltrona(3);
 call Inserir_Poltrona(4);
+call Inserir_Poltrona(5);
+#Precisa de mais uma inserção. Explicado na atividade 11.
 
 
 
 #exercício11
-#Não sei o que caralhos ta acontecendo por aqui
+#A questão pede para adicionar 5 trechos cada um com um ônibus diferente,
+#mas a questão anterior pediu para inserir apenas 4 ônibus.
+#Tem que lembrar adiconar mais uma chamada aos procedimentos Inserir_Onibus e Inserir_Poltrona.
+#Caso contrário a questão 13 pode dar errado na hora de chamar o procedimento.
 drop procedure if exists Inserir_Trecho;
 DELIMITER $$
 CREATE PROCEDURE Inserir_Trecho (data_part date, data_cheg date, horario_part time, horario_cheg time, distancia float, origem int, destino int, onibus int)
 BEGIN
 declare tarifa float;
-declare n int;
+declare n varchar(100);
 
-select poltrona.número_pol into n from poltrona where ((poltrona.cod_oni = onibus) and (poltrona.situação_pol <> 'Livre')) group by poltrona.situação_pol;
-select n as Msg;
+select poltrona.situação_pol into n from poltrona where ((poltrona.cod_oni = onibus) and (poltrona.situação_pol <> 'Livre')) group by poltrona.situação_pol;
 
 if (distancia < 50.0) then set tarifa = 3; end if;
 if ((distancia >= 50.0) and (distancia < 200.0)) then set tarifa = 5; end if;
 if (distancia >= 200.0) then set tarifa = 10; end if;
 
-if (n = '') then
+if (isnull(n)) then
 	if (origem <> destino) then
 		if (data_cheg >= data_part) then
-			#insert into trecho_viagem values(null, data_part, data_cheg, horario_part, horario_cheg, distancia, tarifa, origem, destino, onibus);
-            select concat ('Trecho cadastrado com sucesso!') as Msg;
-		else select concat ('Dia de chegada não pode se antes do dia de saída!') as Msg;
+			insert into trecho_viagem values(null, data_part, data_cheg, horario_part, horario_cheg, distancia, tarifa, origem, destino, onibus);
+            select concat('Trecho cadastrado com sucesso!') as Msg;
+		else select concat('Dia de chegada não pode se antes do dia de saída!') as Msg;
         end if;
-	else select concat ('Cidade de Origem/Destino não podem ser iguais!') as Msg;
+	else select concat('Cidade de Origem/Destino não podem ser iguais!') as Msg;
     end if;
-else select concat ('Ônibus Indisponível') as Msg;
+else select concat('Ônibus Indisponível') as Msg;
 end if;
 END;
 $$ DELIMITER ;
 
-select * from cidade;
-select * from poltrona where cod_oni = 2;
-select * from trecho_viagem;
-call Inserir_Trecho(data_part, data_cheg, horario_part, horario_cheg, distancia, origem, destino, onibus);
 call Inserir_Trecho('2020-10-15', '2020-10-16', '13:30', '01:00', 50, 5, 1, 1);
-call Inserir_Trecho();
-call Inserir_Trecho();
-call Inserir_Trecho();
+call Inserir_Trecho('2020-9-15', '2020-9-16', '23:30', '01:00', 25, 15, 10, 2);
+call Inserir_Trecho('2020-8-15', '2020-8-16', '15:00', '05:30', 69, 7, 8, 3);
+call Inserir_Trecho('2020-7-15', '2020-7-16', '11:30', '10:00', 88, 6, 9, 4);
+call Inserir_Trecho('2020-6-15', '2020-6-16', '22:45', '01:00', 150, 14, 4, 5);
 
 
 
 #exercício12
+#a poltrona era pra ser uma chave estrangeira em passagem?
+drop procedure if exists Inserir_Passagem;
+DELIMITER $$
+CREATE PROCEDURE Inserir_Passagem (data_p date, cod_cli int, cod_func int, trecho int)
+BEGIN
+declare valor float;
+declare cod_t int;
+declare partida  date;
+
+select tarifa_tre, cod_tre, data_part_tre into valor, cod_t, partida from trecho_viagem where cod_tre = trecho;
+#select cod_tre into cod_t from trecho_viagem where cod_tre = trecho;
+#select data_part_tre into partida from trecho_viagem where cod_tre = trecho;
+
+if (cod_t <> '') then
+    if (partida >= data_p) then
+		insert into passagem values(null, data_p, valor, cod_cli, cod_func, trecho, null);
+		select concat('Passagem inserida com sucesso!') as Msg;
+	else select concat('Data inválida!') as Msg;
+    end if;
+else select concat('Trecho inválido!') as Msg;
+end if;
+
+END;
+$$ DELIMITER ;
+
+call Inserir_Passagem('2020-07-14', 4, 1, 4);
+call Inserir_Passagem('2020-06-14', 1, 1, 5);
+call Inserir_Passagem('2020-08-14', 2, 1, 3);
+call Inserir_Passagem('2020-10-14', 3, 1, 1);
+call Inserir_Passagem('2020-09-14', 5, 1, 2);
+
+
+
 #exercício13
+#da pra resolver isso com um gatilho
+drop procedure if exists Marcar_Poltrona;
+DELIMITER $$
+CREATE PROCEDURE Marcar_Poltrona (pass int, polt int)
+BEGIN
+declare sit varchar(100);#situação da poltrona requisitada
+declare bus int;#pegar o id do onibus
+
+select onibus.cod_oni into bus from onibus
+	join trecho_viagem on onibus.cod_oni = trecho_viagem.cod_oni
+	join passagem on trecho_viagem.cod_tre = passagem.cod_tre
+where passagem.cod_pas = pass;#pegar o id do onibus
+
+select situação_pol into sit from poltrona where ((número_pol = polt) and(cod_oni = bus));#situação da poltrona requisitada
+
+if(sit = 'Livre')then
+    update poltrona set situação_pol = 'Ocupada' where ((número_pol = polt) and (cod_oni = bus));
+    update passagem set poltrona_pas = polt where cod_pas = pass;
+	select concat('Poltrona marcada com sucesso!') as Msg;
+else
+	select concat('A poltrona requisitada está ocupada! As seguintes poltronas estão livres') as Msg;
+    select número_pol from poltrona where ((cod_oni = bus) and (situação_pol = 'Livre'));
+end if;
+
+END;
+$$ DELIMITER ;
+
+/*
+select * from passagem where cod_pas = 2;
+select cod_tre from passagem where cod_pas = 2;
+select * from trecho_viagem where cod_tre = 5;
+select * from onibus;# where cod_oni = 5;
+select * from poltrona group by cod_oni;
+select * from poltrona where situação_pol <> 'livre';
+*/
+call Marcar_Poltrona(1, 1);
+call Marcar_Poltrona(2, 15);
+call Marcar_Poltrona(3, 27);
+call Marcar_Poltrona(4, 33);
+call Marcar_Poltrona(5, 4);
+
+
+
 #exercício14
+drop procedure if exists Inserir_Caixa;
+DELIMITER $$
+CREATE PROCEDURE Inserir_Caixa (func int, dataab date)
+BEGIN
+declare funcao varchar(50);
+
+select função_func into funcao from funcionario where cod_func = func;
+
+if (funcao = 'Vendedor') then
+	insert into caixa values(null, dataab, null, 0, 0, 0, 0, func);
+    select concat('Caixa Cadastrado com sucesso') as Msg;
+    else select concat('Funcionario informado não possui a função de Vendedor!') as Msg;
+end if;
+
+END;
+$$ DELIMITER ;
+
+call Inserir_Caixa(1, '2020-05-15');
+call Inserir_Caixa(3, '2020-09-27');
+
+
+
 #exercício15
+drop procedure if exists Inserir_Recebimento;
+DELIMITER $$
+CREATE PROCEDURE Inserir_Recebimento (pass int, caxa int, formapag varchar(100))
+BEGIN
+declare valor double;
+declare datapass date;
+declare datacaxa date;
+
+select valor_pas, data_pas into valor, datapass from passagem where cod_pas = pass;
+select datafechamento_caixa into datacaxa from caixa where cod_caixa = caxa;
+
+if (datapass <> curdate()) then
+	set valor = valor*1.05;
+end if;
+
+if (isnull(datacaxa)) then
+	insert into recebimentos values(null, curdate(), valor, formapag, caxa, pass);
+	select concat('Recebimento inserido com sucesso!') as Msg;
+else select concat('O caixa informado já esta fechado!') as Msg;
+end if;
+
+END;
+$$ DELIMITER ;
+
+call Inserir_Recebimento(1, 1, 'À vista');
+call Inserir_Recebimento(3, 1, 'À vista');
+
 /*
 drop procedure if exists Inserir_Poltrona;
 DELIMITER $$
 CREATE PROCEDURE Inserir_Poltrona (numero int, numero varchar(100), onibus int)
 BEGIN
 
+select concat('FUCK') as Msg;
+
 END;
 $$ DELIMITER ;
+
+call Inserir_Poltrona();
 */
