@@ -1,4 +1,5 @@
 #Script BD_AgenciaBancaria - Versão 5.0
+drop database if exists BD_Banco_v5;
 create database BD_Banco_v5;
 use BD_Banco_v5;
 
@@ -195,19 +196,19 @@ join cliente on conta_corrente.cod_cli_fk = cliente.cod_cli
 join agencia on conta_corrente.cod_ag_fk = agencia.cod_ag;
 
 #exercicio02 
-#Dar um jeito de fazer o mesmo join duas vezes
-/*
+#Dar um jeito de fazer o mesmo join duas vezes.
+#Resolvido. Lembrar de fazer alias com as duas tabelas (join TABELA as PLACEHOLDER)
+create view TansferenciaDados as
 select transferencia.valor_trans as 'Valor', transferencia.data_trans as 'Data', transferencia.descricao_trans as 'Descrição',
 (select conta_corrente.numero_cc from conta_corrente where conta_corrente.cod_cc = transferencia.cod_cc_origem_fk) as 'Conta Origem',
-(select cliente.nome_cli from cliente where conta_corrente.cod_cli_fk = cliente.cod_cli and conta_corrente.cod_cc = transferencia.cod_cc_origem_fk) as 'Cliente que enviou',
+(select cliente.nome_cli from cliente, conta_corrente where conta_corrente.cod_cli_fk = cliente.cod_cli and conta_corrente.cod_cc = transferencia.cod_cc_origem_fk) as 'Cliente que enviou',
 (select conta_corrente.numero_cc from conta_corrente where conta_corrente.cod_cc = transferencia.cod_cc_destino_fk) as 'Conta Destino', 
-(select cliente.nome_cli from cliente where conta_corrente.cod_cli_fk = cliente.cod_cli and conta_corrente.cod_cc = transferencia.cod_cc_destino_fk) as 'Cliente que recebeu'
+(select cliente.nome_cli from cliente, conta_corrente where conta_corrente.cod_cli_fk = cliente.cod_cli and conta_corrente.cod_cc = transferencia.cod_cc_destino_fk) as 'Cliente que recebeu'
 from transferencia
-join conta_corrente on transferencia.cod_cc_origem_fk = conta_corrente.cod_cc
-#join conta_corrente on transferencia.cod_cc_destino_fk = conta_corrente.cod_cc
-join cliente on conta_corrente.cod_cli_fk = cliente.cod_cli
-;
-*/
+join conta_corrente as haza on transferencia.cod_cc_origem_fk = haza.cod_cc
+join cliente as enviado on haza.cod_cli_fk = enviado.cod_cli
+join conta_corrente as hoho on transferencia.cod_cc_destino_fk = hoho.cod_cc
+join cliente as recebido on hoho.cod_cli_fk = recebido.cod_cli;
 
 #exercicio03
 create view SaqueDados as

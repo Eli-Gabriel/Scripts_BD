@@ -1,4 +1,5 @@
 #BD Mecanica 5.0
+drop database if exists bd_mecanica5;
 create database bd_mecanica5;
 use bd_mecanica5;
 
@@ -507,20 +508,21 @@ join venda on cliente.cod_cli = venda.cod_cli_fk
 join itens_venda on venda.cod_vend = itens_venda.cod_vend_fk
 join produto on itens_venda.cod_prod_fk = produto.cod_prod;
 
-#exercicio06  não retorna nenhum resultado, mas a consulta é feita
-/*
-select pagamentos.cod_pag, pagamentos.data_pag, pagamentos.valor_pag, pagamentos.formapagamento_pag, caixa.cod_cai, 
-caixa.dataabertura_cai, funcionario.nome_func, despesas.descrição_desp, 
-despesas.datavencimento_desp, despesas.valor_desp
+#exercicio06  não retorna nenhum resultado, mas a consulta é feita 
+select pagamentos.cod_pag as 'Código Pagamento', pagamentos.data_pag as 'Data Pagamento', pagamentos.valor_pag as 'Valor Pagamento', pagamentos.formapagamento_pag as 'Forma de Pagamento', caixa.cod_cai as 'Código Caixa', 
+caixa.dataabertura_cai as 'Data Abertura Aaixa', funcionario.nome_func as 'Funcionário', despesas.descrição_desp as 'Descrição', despesas.datavencimento_desp as 'Data Vencimento', despesas.valor_desp as 'Valor Despesa'
 from pagamentos
-join despesas on pagamentos.cod_desp_fk = despesas.cod_desp
 join caixa on pagamentos.cod_cai_fk = caixa.cod_cai
-join funcionario on pagamentos.cod_func_fk = funcionario.cod_func;
+join funcionario on pagamentos.cod_func_fk = funcionario.cod_func
+join despesas on pagamentos.cod_desp_fk = despesas.cod_desp;
 
-select * from caixa join pagamentos on caixa.cod_cai= pagamentos.cod_cai_fk;
+#
+/*funcionario 6, caixa 1 e 2, despesas 1 e 2
+select * from pagamentos;
 select * from despesas join pagamentos on pagamentos.cod_desp_fk = despesas.cod_desp;
+select * from caixa join pagamentos on caixa.cod_cai= pagamentos.cod_cai_fk;
 select * from funcionario join pagamentos on funcionario.cod_func = pagamentos.cod_func_fk;
-*/
+#*/
 
 #exercicio07
 select fornecedor.cod_forn as 'Código', fornecedor.razãosocial_forn as 'Nome Fornecedor', 
