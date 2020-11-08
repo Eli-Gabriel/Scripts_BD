@@ -1,8 +1,9 @@
 #Script BD_AgenciaBancaria - Versão 4.0 - Atividade 01 - 3ª Etapa
 #SEU NOME: _________________________________________
 
-create database BD_Banco_Seu_Nome;
-use BD_Banco_Seu_Nome;
+drop database if exists BD_Banco_Agencia;
+create database BD_Banco_Agencia;
+use BD_Banco_Agencia;
 
 create table Banco (
 cod_ban int primary key not null auto_increment,
@@ -112,3 +113,166 @@ codigoBarras_pag varchar (300),
 cod_cc_fk int not null,
 foreign key (cod_cc_fk) references Conta_Corrente (cod_cc)
 );
+
+#TEREFAS A PARTIR DAQUI
+#Tarefa01
+drop trigger if exists depositar;
+DELIMITER $$ 
+CREATE TRIGGER depositar AFTER INSERT ON deposito FOR EACH ROW
+BEGIN 
+UPDATE conta_corrente
+SET saldo_cc = saldo_cc + NEW.valor_dep
+WHERE cod_cc = NEW.cod_cc_fk;
+END;
+$$ DELIMITER ;
+
+drop procedure if exists Inserir_Deposito;
+DELIMITER $$
+CREATE PROCEDURE Inserir_Deposito (valor float, datadep date, tipo varchar(100), cc int)
+BEGIN
+if (valor > 0) then
+    if (tipo = 'Cheque') then
+		if (valor <= 2000) then
+			insert into deposito values(null, valor, datadep, tipo, cc);
+            select concat('Depósito efetuado com sucesso!') as Msg;
+        else select concat('Depósitos em cheque não podem exceder R$ 2000,00.') as Msg;
+        end if;
+    end if;
+    
+    if (tipo = 'Dinheiro') then
+		if (valor <= 5000) then
+			insert into deposito values(null, valor, datadep, tipo, cc);
+			select concat('Depósito efetuado com sucesso!') as Msg;
+        else select concat('Depósitos em Dinheiro não podem exceder R$ 5000,00.') as Msg;
+        end if;
+    end if;
+else select concat('Valor de depósito deve ser maior que 0.') as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
+call Inserir_Deposito(4096, '2020-10-15', 'Dinheiro', 1);
+call Inserir_Deposito(1500, '2020-10-15', 'Cheque', 2);
+call Inserir_Deposito(512, '2020-10-15', 'Cheque', 3);
+call Inserir_Deposito(2048, '2020-10-15', 'Dinheiro', 4);
+call Inserir_Deposito(2000, '2020-10-15', 'Cheque', 5);
+
+
+
+#Tarefa02
+drop trigger if exists realizar_saque;
+DELIMITER $$ 
+CREATE TRIGGER realizar_saque AFTER INSERT ON saque FOR EACH ROW
+BEGIN 
+UPDATE conta_corrente
+SET saldo_cc = saldo_cc - NEW.valor_saq
+WHERE cod_cc = NEW.cod_cc_fk;
+END;
+$$ DELIMITER ;
+
+drop procedure if exists Inserir_Saque;
+DELIMITER $$
+CREATE PROCEDURE Inserir_Saque (valor_saq float, data_saq date, local_saq varchar(100), hora_saq time, cc int)
+BEGIN
+declare saldo float;
+select saldo_cc into saldo from conta_corrente where cod_cc = cc;
+
+if (saldo >= valor_saq) then
+	if (valor_saq <= 3000) then
+		if (hora_saq BETWEEN '00:00' AND '06:01') then
+            select concat('Saques só podem ser realizados entre 06:01 e 23:59!') as Msg;
+		else 
+			insert into saque values(null, valor_saq, data_saq, local_saq, hora_saq, cc);
+			select concat('Saque realizado com sucesso!') as Msg;
+        end if;
+	else select concat('Valor máximo permitido para saque: R$3000,00') as Msg;
+	end if;
+else select concat('Saldo insuficiente!') as Msg;
+end if;
+
+END;
+$$ DELIMITER ;
+
+call Inserir_Saque(1096, '2020-05-16', 'Auto-atendiento', '06:01', 1);#4096
+call Inserir_Saque(500, '2020-10-10', 'Lotérica', '22:00', 2);#1500
+call Inserir_Saque(12, '2020-08-24', 'Lotérica', '15:27', 3);#512
+call Inserir_Saque(548, '2020-01-09', 'Lotérica', '12:03', 4);#2048
+call Inserir_Saque(500, '2020-11-13', 'Auto-atendiento', '09:50', 5);#2000
+
+
+
+#Tarefa03
+drop trigger if exists baixar_transferencia;
+DELIMITER $$ 
+CREATE TRIGGER baixar_transferencia AFTER INSERT ON transferencia FOR EACH ROW
+BEGIN 
+UPDATE conta_corrente
+SET saldo_cc = saldo_cc - NEW.valor_trans
+WHERE cod_cc = NEW.cod_cc_origem_fk;
+
+UPDATE conta_corrente
+SET saldo_cc = saldo_cc + NEW.valor_trans
+WHERE cod_cc = NEW.cod_cc_destino_fk;
+END;
+$$ DELIMITER ;
+
+drop procedure if exists Inserir_Transferencia;
+DELIMITER $$
+CREATE PROCEDURE Inserir_Transferencia (valor_trans float, data_trans date, descricao_trans varchar(100), cod_origem int, cod_destino int)
+BEGIN
+declare saldo float;
+select saldo_cc into saldo from conta_corrente where cod_cc = cod_origem;
+
+if (saldo >= valor_trans) then
+	if (cod_origem <> cod_destino) then
+        insert into transferencia values(null, valor_trans, data_trans, descricao_trans, cod_origem, cod_destino);
+        select concat('Transferência realizada com sucesso!') as Msg;
+	else select concat('Contas de Origem e Destino DEVEM ser diferentes!') as Msg;
+	end if;
+else select concat('Saldo insuficiente!') as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
+call Inserir_Transferencia(500, '2020-12-21', 'Comun', 1, 3);
+
+
+
+#Tarefa04
+drop trigger if exists baixar_pagamento;
+DELIMITER $$ 
+CREATE TRIGGER baixar_pagamento AFTER INSERT ON pagamento FOR EACH ROW
+BEGIN 
+UPDATE conta_corrente
+SET saldo_cc = saldo_cc - NEW.valor_pag
+WHERE cod_cc = NEW.cod_cc_fk;
+END;
+$$ DELIMITER ;
+
+drop procedure if exists Inserir_Pagamento;
+DELIMITER $$
+CREATE PROCEDURE Inserir_Pagamento (valor_pag float, data_pag date, tipo_pag varchar(100), hora_pag time, dataVencimento_pag date, codigoBarras_pag varchar(300), cod_cc_fk int)
+BEGIN
+declare saldo float;
+select saldo_cc into saldo from conta_corrente where cod_cc = cod_cc_fk;
+
+if (saldo >= valor_pag) then
+	if (hora_pag BETWEEN '09:00' AND '21:00') then
+            if (length(codigoBarras_pag) = 10) then
+                insert into pagamento values(null, valor_pag, data_pag, tipo_pag, hora_pag, dataVencimento_pag, codigoBarras_pag, cod_cc_fk);
+				select concat('Pagamento realizado com sucesso!') as Msg;
+			else select concat('Código de barras inválido!') as Msg;
+            end if;          
+		else 
+			select concat('Saques só podem ser realizados entre 09:00 e 21:00!') as Msg;
+        end if;
+else select concat('Saldo insuficiente!') as Msg;
+end if;
+END;
+$$ DELIMITER ;
+
+select * from pagamento;
+select * from conta_corrente;
+call Inserir_Pagamento(500, curdate(), 'Dinheiro', '09:00', '2020-12-31', '1234567890', 1);
+call Inserir_Pagamento(500, curdate(), 'Dinheiro', '12:17', '2020-12-31', '1942754361', 4);
+call Inserir_Pagamento(500, curdate(), 'Dinheiro', '19:25', '2020-12-31', '2048243561', 5);
